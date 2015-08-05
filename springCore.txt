@@ -10,7 +10,8 @@
 	depends-on		- Végső kétségbeesésben. Nagyon kerülendő!
 	lazy-initialization	- Sokat nem ér
 	autowire		- byType, byName
-	primary			- autowire esetén az elsődleges
+	autowire-candidate	- enable/disable a bean to be candidate, default is on
+	primary			- autowire esetén az elsődleges candidate
 	abstract		- nem instaciálható
 	parent			- ősbean (mindig a gyerekből olvassa: depends-on, autowire, dependency check, singleton, scope, lazy init)
 
@@ -25,11 +26,12 @@
 
 	<property
 	ref			- bean reference, collection reference
-	name			- name of the property (setter needed) compound property name - carefully (must not be null)
+	name			- name of the property (setter needed) compound property name - carefully (must not be null), useful when overriding parent definition
 	<list, stb.>		- can be nested under property
 
 	<bean			- nested beans, akkor célszerű, ha csak a parent bean éri el. nem kell ilyenkor id (más úgyse éri el)
-
+	
+        <lookup-method 		- name="getSentDate" metódus lefuttatása esetén inkább ezt csinálja helyette: bean="currentDate" />
 
 
 
@@ -41,7 +43,8 @@
 
 it is the same as
 
-<context:property-placeholder location="/WEB-INF/datasource.properties" />
+<context:property-placeholder location="/WEB-INF/datasource.properties" /> - property file behúzása
+<context:property-placeholder location="classpath:com/foo/jdbc.properties" />
 <context:annotation-config /> a leggyakoribb beanPostProcessorokat beregisztrálja
 <context:component-scan base-package="..." /> keresi az annotációkat
 
@@ -94,7 +97,7 @@ a springben a set az "egyediséget" bean definíció alapján tekinti, nem pl.: 
 5. implementable interfaces and lifecycle:
 
 BeanNameAware				|
-BeanFactoryAware			| - Default BeanPostProcessor
+BeanFactoryAware			| - Default BeanPostProcessor, try to avoid them!
 ApplicationContextAware			|
 
 BeanPostProcessors pre-initialization	| - From configuration
@@ -121,7 +124,7 @@ destroy nem lesz meghívva pl prototype-on. Még tesztelni kell, nem tudom hogya
 BeanFactorynak az a BeanFactoryPostProcessor ami a
 Beannek a BeanPostProcessor
 
-
+BeanFactoryPostProcessor példák: CustomEditorConfigurer, PropertyPlaceholderConfigurer, PropertyOverrideConfigurer
 
 8. BeanPostProcessor
 
@@ -160,6 +163,10 @@ implements Converter<T, S>	- S -> T. convert, simply return
 
 Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kellene készíteni.
 
+#{ }
+#{ T(java.lang.Math).random()} - T, azaz típus
+#{ bean.property }
+
 
 
 
@@ -185,3 +192,26 @@ Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kelle
 </bean>
 
 <bean name="x" class="z" c:_0-ref="bar" c:_1-ref="baz">
+
+
+
+13. util usage
+
+<util:constant static-field="..."/> - constant behozatala
+<util:property-path id="name" path="testBean.age"> - testBean bean age property-jére hivatkozunk.
+
+
+
+14. autowire
+
+Spring megpróbálja kitalálni, mit hova kell beszúrni.
+Lehetőségek:
+	- no
+	- byName
+	- byType - akkor használom a byName helyett pl, ha nem azonos az ID és a property neve
+	- constructor - alapvetően típus alapján.
+Ha ambigous, akkor köszi, ennyi volt, vége.
+
+bytype és constructor esetén az autowire List vagy Set-es dependency-khez összegyűjti az összes elemet amelyik az elvárt típusú és mindet beteszi a collection-be.
+bytype és constructor esetén az autowire Map-es dependency-khez összegyűjti az összes várt elemet amelyik elvárt típusú, és bean-név, bean pártként elhelyezi.
+byname esetén autowire-elhetünk util:set, util:map vagy util:list-et.
