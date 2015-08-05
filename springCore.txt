@@ -33,8 +33,7 @@
 	
         <lookup-method 		- name="getSentDate" metódus lefuttatása esetén inkább ezt csinálja helyette: bean="currentDate" />
 
-
-
+-----------------------------------------------
 2. context usage:
 
 <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -44,21 +43,19 @@
 it is the same as
 
 <context:property-placeholder location="/WEB-INF/datasource.properties" /> - property file behúzása
+
 <context:property-placeholder location="classpath:com/foo/jdbc.properties" />
 <context:annotation-config /> a leggyakoribb beanPostProcessorokat beregisztrálja
 <context:component-scan base-package="..." /> keresi az annotációkat
 
-
-
+-----------------------------------------------
 3. importing xml:
 
 <beans>
 	<import resource="xxx.xml">
 </beans>
 
-
-
-
+-----------------------------------------------
 4. collections:
 
 Ha property-nek adom át, nem feltétlenül kell megegyeznie a típusnak a class-ban és a property-nél (list-set, set-list)
@@ -93,7 +90,7 @@ a springben a set az "egyediséget" bean definíció alapján tekinti, nem pl.: 
 <util:properties id="">
 	<prop key=""></prop>
 
-
+-----------------------------------------------
 5. implementable interfaces and lifecycle:
 
 BeanNameAware				|
@@ -110,15 +107,12 @@ custom destroy-method			| - From configuration
 
 destroy nem lesz meghívva pl prototype-on. Még tesztelni kell, nem tudom hogyan működik.
 
-
-
-
+-----------------------------------------------
 6. null
 
 <null/>
 
-
-
+-----------------------------------------------
 7. BeanFactory
 
 BeanFactorynak az a BeanFactoryPostProcessor ami a
@@ -126,6 +120,12 @@ Beannek a BeanPostProcessor
 
 BeanFactoryPostProcessor példák: CustomEditorConfigurer, PropertyPlaceholderConfigurer, PropertyOverrideConfigurer
 
+directly under placeholderconfigurer, in order to add system property as fallback:
+<property name="properties">
+	<value>custom.strategy=foo.strategy</value>
+</property>
+
+-----------------------------------------------
 8. BeanPostProcessor
 
 implements BeanPostProcessor
@@ -133,8 +133,7 @@ implements BeanPostProcessor
 
 <context:annotation-config /> a leggyakoribb beanPostProcessorokat beregisztrálja
 
-
-
+-----------------------------------------------
 9. PropertyEditor, Converter
 
 extends PropertyEditorSupport	- String -> Object. setAsText, use setValue inside.
@@ -158,7 +157,7 @@ implements Converter<T, S>	- S -> T. convert, simply return
 		</property>
 	</bean>
 
-
+-----------------------------------------------
 10. expression language
 
 Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kellene készíteni.
@@ -167,9 +166,7 @@ Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kelle
 #{ T(java.lang.Math).random()} - T, azaz típus
 #{ bean.property }
 
-
-
-
+-----------------------------------------------
 11. p usage
 
 <bean name="x" class="z">
@@ -182,8 +179,7 @@ Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kelle
 	<p:azi-ref=valaki>
 </bean>
 
-
-
+-----------------------------------------------
 12. c usage
 
 <bean name="x" class="z">
@@ -193,15 +189,13 @@ Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kelle
 
 <bean name="x" class="z" c:_0-ref="bar" c:_1-ref="baz">
 
-
-
+-----------------------------------------------
 13. util usage
 
 <util:constant static-field="..."/> - constant behozatala
 <util:property-path id="name" path="testBean.age"> - testBean bean age property-jére hivatkozunk.
 
-
-
+-----------------------------------------------
 14. autowire
 
 Spring megpróbálja kitalálni, mit hova kell beszúrni.
