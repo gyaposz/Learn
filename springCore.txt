@@ -1,25 +1,35 @@
 ﻿1. Bean definition:
 
-<bean	class		- required
-	id		- unique | not required | 1 - beanPostProcessor esetén nem kell
-	name		- not unique, but spring complains if collides | not required | multiple, but not used
-	scope 		- singleton csak egy, ez a default|prototype mindig új|session|request|global|custom
-	factory-method	- Amivel az objektumokat gyártjuk (akár saját class-szal (static), akár factory-bean-nel (instance))
-	factory-bean	- melyik bean-nel gyártjuk oket?
-	init-method	- custom init-method (@see lifecycle)
+<bean	class			- required
+	id			- unique | not required | 1 - beanPostProcessor esetén nem kell
+	name			- not unique, but spring complains if collides | not required | multiple, but not used
+	scope			- singleton csak egy, ez a default|prototype mindig új|session|request|global|custom
+	factory-method		- Amivel az objektumokat gyártjuk (akár saját class-szal (static), akár factory-bean-nel (instance))
+	factory-bean		- melyik bean-nel gyártjuk oket?
+	init-method		- custom init-method (@see lifecycle)
+	depends-on		- Végső kétségbeesésben. Nagyon kerülendő!
+	lazy-initialization	- Sokat nem ér
+	autowire		- byType, byName
+	primary			- autowire esetén az elsődleges
 
-	<alias name= from=> - better than multiple names
+	<alias name= from=>	- better than multiple names
 
 	<constructor-arg sorrendben, ha nem indexet használunk
-	type		- class
-	value		- ez lesz konvertálva a type-ra.
-	index		- type helyett is lehet, ha nem adunk sorrendben.
-	idref		- direct value of a bean
-	ref		- bean reference
+	type			- class
+	value			- ez lesz konvertálva a type-ra. (@see PropertyEditor, Converter)
+	index			- type helyett is lehet, ha nem adunk sorrendben.
+	idref			- direct value of a bean
+	ref			- bean reference
 
 	<property
-	ref		- bean reference
-	name		- name of the property (setter needed)
+	ref			- bean reference
+	name			- name of the property (setter needed) compound property name - carefully (must not be null)
+	<list, stb.>		- can be nested under property
+
+	<bean			- nested beans also possible
+
+
+
 
 2. context usage:
 
@@ -30,7 +40,8 @@
 it is the same as
 
 <context:property-placeholder location="/WEB-INF/datasource.properties" />
-
+<context:annotation-config /> a leggyakoribb beanPostProcessorokat beregisztrálja
+<context:component-scan base-package="..." /> keresi az annotációkat
 
 
 
@@ -46,8 +57,14 @@ it is the same as
 4. collections:
 
 <list/> <set/> <map/> <props/>
+Can have value, ref
 
+<util:list/> <util:set/>
+Can have bean, ref
 
+<util:properties>
+	<prop key=""></prop>
+</util:properties>
 
 
 
@@ -89,3 +106,33 @@ implements BeanPostProcessor
 Önmaga is bean
 
 <context:annotation-config /> a leggyakoribb beanPostProcessorokat beregisztrálja
+
+
+
+9. PropertyEditor, Converter
+
+extends PropertyEditorSupport	- String -> Object. setAsText, use setValue inside.
+implements Converter<T, S>	- S -> T. convert, simply return
+				- Be careful that ID is mandatory!
+
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="..." value="...PropertyEditor" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="conversionService"
+		class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="...Converter" />
+			</list>
+		</property>
+	</bean>
+
+
+10. expression language
+
+Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kellene készíteni.
