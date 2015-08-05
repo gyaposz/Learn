@@ -11,6 +11,8 @@
 	lazy-initialization	- Sokat nem ér
 	autowire		- byType, byName
 	primary			- autowire esetén az elsődleges
+	abstract		- nem instaciálható
+	parent			- ősbean
 
 	<alias name= from=>	- better than multiple names
 
@@ -22,11 +24,11 @@
 	ref			- bean reference
 
 	<property
-	ref			- bean reference
+	ref			- bean reference, collection reference
 	name			- name of the property (setter needed) compound property name - carefully (must not be null)
 	<list, stb.>		- can be nested under property
 
-	<bean			- nested beans also possible
+	<bean			- nested beans, akkor célszerű, ha csak a parent bean éri el. nem kell ilyenkor id (más úgyse éri el)
 
 
 
@@ -56,16 +58,35 @@ it is the same as
 
 4. collections:
 
-<list/> <set/> <map/> <props/>
-Can have value, ref
+Ha property-nek adom át, nem feltétlenül kell megegyeznie a típusnak a class-ban és a property-nél (list-set, set-list)
+Viszont vigyázat!!!
+a springben a set az "egyediséget" bean definíció alapján tekinti, nem pl.: scope="prototype, stb. alapján.
 
-<util:list/> <util:set/>
-Can have bean, ref
+<list/>
+	<value>
+	<ref bean=>
+<set/>
+	<value>
+	<ref bean=>
+<map/>
+	<entry key= value=
+	<entry key= value-ref=
+<props/>
+	<prop key="">value</prop>
 
-<util:properties>
+Önálló collections, ref-fel hivatkozhatok rájuk property-n belül pl.
+
+<util:list id=""/>
+	<value>
+	<ref bean=>
+<util:set id=""/>
+	<value>
+	<ref bean=>
+<util:map id="">
+	<entry key= value=
+	<entry key= value-ref=
+<util:properties id="">
 	<prop key=""></prop>
-</util:properties>
-
 
 
 5. implementable interfaces and lifecycle:
