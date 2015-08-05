@@ -12,7 +12,7 @@
 	autowire		- byType, byName
 	primary			- autowire esetén az elsődleges
 	abstract		- nem instaciálható
-	parent			- ősbean
+	parent			- ősbean (mindig a gyerekből olvassa: depends-on, autowire, dependency check, singleton, scope, lazy init)
 
 	<alias name= from=>	- better than multiple names
 
@@ -73,6 +73,8 @@ a springben a set az "egyediséget" bean definíció alapján tekinti, nem pl.: 
 	<entry key= value-ref=
 <props/>
 	<prop key="">value</prop>
+
+<props merge="true">	- gyerekben örökölt property esetén a parent elemeit is átveszi
 
 Önálló collections, ref-fel hivatkozhatok rájuk property-n belül pl.
 
@@ -157,3 +159,29 @@ implements Converter<T, S>	- S -> T. convert, simply return
 10. expression language
 
 Próbáljuk meg elkerülni a nagyon bonyolult dolgokat. Helyette Factory-t kellene készíteni.
+
+
+
+
+11. p usage
+
+<bean name="x" class="z">
+	<property name="azonosito" value="érték">
+	<property name="azi" ref="valaki">
+</bean>
+
+<bean name="x2" class="z">
+	<p:azonosito="érték>
+	<p:azi-ref=valaki>
+</bean>
+
+
+
+12. c usage
+
+<bean name="x" class="z">
+	<constructor-arg ref="bar">
+	<constructor-arg ref="baz">
+</bean>
+
+<bean name="x" class="z" c:_0-ref="bar" c:_1-ref="baz">
