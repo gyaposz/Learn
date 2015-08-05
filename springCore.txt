@@ -1,9 +1,22 @@
-<bean	class <required>
-	id <unique | not required | 1>
-	name <not unique, but spring complains if collides | not required | multiple, but not used>
-	alias <better than name>
+1. Bean definition:
 
+<bean	class - required
+	id - unique | not required | 1
+	name - not unique, but spring complains if collides | not required | multiple, but not used
+	<alias name= from=> -better than name
+	scope - singleton csak egy, ez a default|prototype mindig új|session|request|global|custom
+	factory-method - mivel gyártjuk az objektumokat
+	factory-bean - melyik bean-nel gyártjuk oket?
 
+	<constructor-arg sorrendben, ha nem indexet használunk
+	type - class
+	value - ez lesz konvertálva a type-ra.
+	index - type helyett is lehet, ha nem adunk sorrendben.
+
+	idref - direct value of a bean
+	ref   - bean reference
+
+2. context usage:
 
 <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 	<property name="location" value="/WEB-INF/datasource.properties" />
@@ -15,4 +28,22 @@ it is the same as
 
 
 
+3. importing xml:
 
+<beans>
+	<import resource="xxx.xml">
+</beans>
+
+
+4. collections:
+
+<list/> <set/> <map/> <props/>
+
+
+5. implementable interfaces:
+
+BeanNameAware
+BeanFactoryAware
+ApplicationContextAware
+InitializingBean
+DisposableBean
