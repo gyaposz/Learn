@@ -248,8 +248,10 @@ public boolean isSingleton() {
 
 @Autowired
 byType and byName as fallback
-on setters
-or any methods
+- on setters
+- on constructor
+- on private tags without setters
+- or any methods
 
 @Qualifier
 finer grade control than primary
