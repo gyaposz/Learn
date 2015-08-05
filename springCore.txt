@@ -209,3 +209,11 @@ Ha ambigous, akkor köszi, ennyi volt, vége.
 bytype és constructor esetén az autowire List vagy Set-es dependency-khez összegyűjti az összes elemet amelyik az elvárt típusú és mindet beteszi a collection-be.
 bytype és constructor esetén az autowire Map-es dependency-khez összegyűjti az összes várt elemet amelyik elvárt típusú, és bean-név, bean pártként elhelyezi.
 byname esetén autowire-elhetünk util:set, util:map vagy util:list-et.
+
+-----------------------------------------------
+//instead of AbstractJUnit4SpringContextTests you may use:
+// @RunWith(SpringJUnit4ClassRunner)
+@ContextConfiguration(locations="classpath:context-business.xml")
+public class MailterTest extends AbstractJUnit4SpringContextTests {
+
+Listener problems - read offending classes: may required javax.servlet, spring-web and junit 4.9+ (in case of spring 4.0+)
