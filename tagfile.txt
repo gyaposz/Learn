@@ -1,0 +1,7 @@
+Tag files			- basic features of simple tag
+				- or solves include/import mess
+				- tags subdirectory mainly
+<%attribute %>			in tag-file (like taglib: name, required, rtexprvalue)
+<%tag body-content=... %>	like taglib
+<jsp:doBody/>			like taglib invoke
+<%tag dynamic-attributes%>	can be used as a hashmap

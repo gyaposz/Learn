@@ -1,0 +1,34 @@
+<%@ page %>			page directive
+<%@ page isELignore %>		Can we use EL expressions? false by default :(
+<%@ page isErrorPage %>		exceptions only available for errorpages (${pageContext.exception})
+<%@ page errorPage %>		what is the designated error page
+<%@ page import %>		java class import
+<%@ include %>			static include, simple copy at translation time before compilation, 1 servlet
+<%@ taglib uri, prefix %>	taglib use, uri as uri in .tld file (WEB-INF), prefix as we want to use.
+<%@ taglib tagdir, prefix %>	tag-file usage, where tagdir is a location like "WEB-INF/tags"
+<%= %>				expression (<% out.print() %>)
+<%-- -->			comment
+<%! %>				declaraction
+<% %>				executed as it is
+
+<jsp:useBean>			registers or creates an attribute from any given scope as javabean (scope, id, type, class)
+<jsp:setProperty>		setting property of a javabean. Put in useBean's body to set when we create it new.
+<jsp:getProperty>		write out property of a javabean
+<jsp:include page>		dynamic include, (like servlet req.getRequestDispatcher().include()), at request time
+<jsp:param>			in the body of jsp:include (new request params or changing request params)
+<jsp:forward page>		just like RequestDispatcher.forward()
+<jsp:attribute>			alternate attribute (<x:x att="val"> or <x:x><jsp:attribute name="att">val</jsp:attribute></x:x>
+<jsp:body>			alternate for body
+
+<c:if>				conditional expression
+<c:foreach varStatus>		looping (begin, end, step, current, count, index, isLast, isFirst is contained in varStatus,)
+<c:choose>			multiselectional expression
+<c:when>			option for choose (tests can even be used for different options)
+<c:otherwise>			default option for choose
+<c:out>				escapeXml (&lt;, &gt;, etc.), default value
+<c:set>				setting attribute in a scope (create, set, remove), or in map
+<c:remove>			remove attribute
+<c:import>			it is jsp:include
+<c:param>			it is jsp:param
+<c:url value>			URL (with jsessionid if no cookie available), it also considers application root
+<c:catch var="x">		fetches an error and put it x exception pageScope attribute

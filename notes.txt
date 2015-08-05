@@ -1,0 +1,18 @@
+<bean	class <required>
+	id <unique | not required | 1>
+	name <not unique, but spring complains if collides | not required | multiple, but not used>
+	alias <better than name>
+
+
+
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<property name="location" value="/WEB-INF/datasource.properties" />
+</bean>
+
+it is the same as
+
+<context:property-placeholder location="/WEB-INF/datasource.properties" />
+
+
+
+

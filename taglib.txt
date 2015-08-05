@@ -1,0 +1,28 @@
+<taglib>
+	<tlib-version></tlib-version>
+	<uri></uri>
+	<function>
+		<function-class></function-class>
+		<function-signature></function-signature>
+	</function>
+	<tag>
+		<description></description>
+		<name></name>
+		<tag-class></tag-class>
+		<body-content>empty|JSP|scriptless|tagdependent</body-content>
+		<attribute>
+			<name></name>
+			<required></required>
+			<rtexprvalue></rtexprvalue>
+		</attribute>
+		<dynamic-attribute>true</dynamic-attribute> //if more attributes may come dynamically
+	</tag>
+</taglib>
+
+override SimpleTagSupport.doTag, use setter for attribute
+getJspContext().getOut().write
+getJspBody.invoke()
+JspFragment(getJspBody())
+SkipPageException - do not process the page any more (e.g.: when our tag is optional)
+getParent - parent OuterTag
+findAncestorWithClass - parent's parent's ... WayOuterTag
