@@ -246,6 +246,8 @@ public boolean isSingleton() {
 -----------------------------------------------
 17. Annotations
 
+Cannot be used for BeanPostProcessors as they will process the annotations.
+
 @Autowired
 byType and byName as fallback
 - on setters
@@ -260,3 +262,22 @@ auto-wire in xml ignores <qualifier>
 
 @Required
 on setter methods to make them required dependency (if it is provided as constructor-arg, then spring will send failures).
+
+Bean annotation:
+
+@Resource      |
+@PostConstruct | - from specification
+@PreDestroy    |
+
+@Component - singleton
+@Component-ből származnak le: @Service, @Controller, @Repository
+
+componenthez azonban kell a <context:component-scan base-package="...">, ez olyan, mintha context:annotation-config-om lenne.
+
+@Scope - as scope in xml
+@Qualifier - with autowired acts as a filter, without autowired acts as qualifier in xml
+@Value - as value in xml
+(@Bean, @Lazy only in javaConfig (@Configuration))
+
+@Inject replacing @Autowired
+@Named replacing partially @Component/@Qualifier
