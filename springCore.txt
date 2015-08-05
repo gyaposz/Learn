@@ -1,20 +1,25 @@
-1. Bean definition:
+﻿1. Bean definition:
 
-<bean	class - required
-	id - unique | not required | 1
-	name - not unique, but spring complains if collides | not required | multiple, but not used
-	<alias name= from=> -better than name
-	scope - singleton csak egy, ez a default|prototype mindig �j|session|request|global|custom
-	factory-method - mivel gy�rtjuk az objektumokat
-	factory-bean - melyik bean-nel gy�rtjuk oket?
+<bean	class		- required
+	id		- unique | not required | 1 - beanPostProcessor esetén nem kell
+	name		- not unique, but spring complains if collides | not required | multiple, but not used
+	scope 		- singleton csak egy, ez a default|prototype mindig új|session|request|global|custom
+	factory-method	- Amivel az objektumokat gyártjuk (akár saját class-szal (static), akár factory-bean-nel (instance))
+	factory-bean	- melyik bean-nel gyártjuk oket?
+	init-method	- custom init-method (@see lifecycle)
 
-	<constructor-arg sorrendben, ha nem indexet haszn�lunk
-	type - class
-	value - ez lesz konvert�lva a type-ra.
-	index - type helyett is lehet, ha nem adunk sorrendben.
+	<alias name= from=> - better than multiple names
 
-	idref - direct value of a bean
-	ref   - bean reference
+	<constructor-arg sorrendben, ha nem indexet használunk
+	type		- class
+	value		- ez lesz konvertálva a type-ra.
+	index		- type helyett is lehet, ha nem adunk sorrendben.
+	idref		- direct value of a bean
+	ref		- bean reference
+
+	<property
+	ref		- bean reference
+	name		- name of the property (setter needed)
 
 2. context usage:
 
@@ -28,6 +33,7 @@ it is the same as
 
 
 
+
 3. importing xml:
 
 <beans>
@@ -35,15 +41,51 @@ it is the same as
 </beans>
 
 
+
+
 4. collections:
 
 <list/> <set/> <map/> <props/>
 
 
-5. implementable interfaces:
 
-BeanNameAware
-BeanFactoryAware
-ApplicationContextAware
-InitializingBean
-DisposableBean
+
+
+5. implementable interfaces and lifecycle:
+
+BeanNameAware				|
+BeanFactoryAware			| - Default BeanPostProcessor
+ApplicationContextAware			|
+
+BeanPostProcessors pre-initialization	| - From configuration
+InitializingBean                        | - Default BeanPostProcessor (CommonAnnotationBeanPostProcessor)
+custom init-method			| - From configuration
+BeanPostProcessors post-initialization	| - From configuration
+
+DisposableBean				| - Default BeanPostProcessor (CommonAnnotationBeanPostProcessor)
+custom destroy-method			| - From configuration 
+
+destroy nem lesz meghívva pl prototype-on. Még tesztelni kell, nem tudom hogyan működik.
+
+
+
+
+6. null
+
+<null/>
+
+
+
+7. BeanFactory
+
+BeanFactorynak az a BeanFactoryPostProcessor ami a
+Beannek a BeanPostProcessor
+
+
+
+8. BeanPostProcessor
+
+implements BeanPostProcessor
+Önmaga is bean
+
+<context:annotation-config /> a leggyakoribb beanPostProcessorokat beregisztrálja
