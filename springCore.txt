@@ -261,7 +261,7 @@ finer grade control than primary
 auto-wire in xml ignores <qualifier>
 
 @Required
-on setter methods to make them required dependency (if it is provided as constructor-arg, then spring will send failures).
+on setter methods to make them required dependency (if it is provided as constructor-arg instead of setter, then spring will send failures as it only checks the setter method if it was executed).
 
 Bean annotation:
 
@@ -281,3 +281,57 @@ componenthez azonban kell a <context:component-scan base-package="...">, ez olya
 
 @Inject replacing @Autowired
 @Named replacing partially @Component/@Qualifier
+
+-----------------------------------------------
+18. JavaConfig
+
+@Configuration - xml file helyett (@Component leszármazottja, de nem akarjuk azért, hogy felolvassa a component-scan. Ezt kapja direktben az ApplicationContext.
+AnnotationConfigApplicationContext(*.class) - ezzel olvassuk fel. vagy ctx.scan("packagename"); ctx.refresh(); It will find all @Configuration as they are subclass of @Component
+
+pl.:
+@Configuration
+public class AppConfig {
+	@Bean
+	public MyService myService() {
+		return new MyServiceImpl();
+	}
+}
+
+<beans>
+	<bean id="myService" class="com.acme.services.MyServiceImpl" />
+</beans>
+
+@Bean: @Scope, @Lazy, @DependsOn
+@Bean: metódusokra kell tenni, metód bean-t generál. leginkább csak a @Configuration-ben szabad használni. Default-ból Singleton. Még ha látszólag return new is van, de AOP-val körbe lesz bástyázva CGLIB segítségével.
+	- initMethod, destroyMethod (@Bean(initMethod="init"))
+
+@Autowired - egyben required is.
+@Import    - importálni kell egy másik @Configuration-ös class-t, ha szét van szedve. Configuration osztályok egymásból öröklődhetnek, vagy private tagként tárolják, vagy autowired marad.
+
+@ComponentScan - context: component-scan
+@ImportResource - XML configuration import to @Configuration
+@PropertySource - PropertySourcesPlaceholderConfigurer - creates a PropertySource
+
+-----------------------------------------------
+19. i18n spring
+
+Springben MessageSource-unk van. ResourceBundle helyett.
+pl.:	final MessageSource messageSource = (MessageSource) context;
+	messageSource.getMessage("X", null, "X", new Locale("hu", "HU"))
+
+-----------------------------------------------
+20. Profile-ozás springben
+
+beans profile="dev"
+
+vagy
+
+@Profile in javaconfig
+
+ctx.getEnvironment.setActiveProfiles("dev", "prod");
+-Dspring.profiles.active="dev", "prod"
+
+ctx.refresh még ilyenkor kell!
+
+Mi van, ha két azonos ID-jú, profile-os és profile nélküli bean-em van? profile nélkülit felülcsapja. 
+Mi van, ha két azonos ID-jú, másik profile-ban lévő bean-em van? valamelyik felülcsapja a másikat.
