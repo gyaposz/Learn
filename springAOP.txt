@@ -1,1 +1,141 @@
-﻿
+﻿1. First example
+
+In class:
+
+@Aspect			- org.aspectj.lang.annotation.Aspect;		- Aspect
+@Component		- org.springframework.stereotype.Component;	- Aspects will be beans!
+public class ....
+
+@Before						- before advice
+@AfterReturning(pointcut=, returning="retVal")	- after returning advice
+public void methodName(Object retVal)
+@AfterThrowing(pointcut=, throwing="ex")	- after throw advice - szűr az exception-ök alapján is akár
+public void methodName(DBException ex)
+@After						- after (finally) advice - akár exception akár return
+@Around						- around advice - akár előtte és utána is.
+
+method			- a signatúrába "final JoinPoint joinPoint" fog kerülni.
+			- Around esetén viszont ProceedingJointPoint-ot kapunk, aminek hívhatunk proceed() metódusát (akár visszatérési értéket is nézhetünk).
+
+
+joinPoint.getTarget()	- the target object
+joinPoint.getThis()	- the proxy object
+joinPoint.getArgs()	- arguments
+joinPoint.getSignature()- for logging actual JointPoint details
+
+In Spring xml:
+
+- aop namespace bekapcsolása
+- <aop:aspectj-autoproxy>
+- <context:component-scan base-package="" />
+
+In pom.xml
+
+dependency: org.aspectj, aspectjweaver, 1.7.3
+only proxy in spring
+
+-----------------------------------------------
+2. Other possiblities
+
+JavaConfig:
+@EnableAspectJAutoProxy
+
+pure bean:
+<bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator" />
+
+-----------------------------------------------
+3. Spring AOP concept
+
+Aspect = Advice + PointCut (When+What + Where)
+
+- public methods only
+- BeanPostProcessor cannot catch setter in init time.
+- Creation:	- either implementing one fo the target's interfaces
+		- if there is no interface, CGLIB
+			- final methods cannot be advised
+			- no-arg constructor is required
+			- constructor runs twice (1 target, 1 proxy)
+			- since Spring 3.2 in spring-core.jar
+-----------------------------------------------
+4. Force CGLIB
+
+- <aop:aspectj-autoproxy proxy-target-class="true"> (NOTE: Ilyenkor az advice-olt osztálynak kell, hogy legyen default constructora)
+
+-----------------------------------------------
+5. PointCut
+
+@PointCut("execution(* methodname(..))")
+private void arbitraryMethodName() {}
+
+@Before("arbitraryMethodName()")
+public void ...
+
+-----------------------------------------------
+6. PointCut language
+
+execution	- method calling in Spring only this: (modifiers-pattern? ret-type-pattern declaring-type-patterns? name-pattern(param-pattern) throws-pattern?)
+	parameters pattern = (), (..), (*), (*, String) - no params, any param, one any type param, one any type param and a string
+
+within		- type of target object
+target		- target object, parameter binding
+this		- type of proxy, parameter binding
+args		- type of arguments                    - e.g. @PointCut("execution( * args(int))")
+
+@within		- annotations of type of target object - e.g. @PointCut("@within(com.xyz.annotation.Blessed) && execution (* * (..))
+@target		- annotations of target object
+@args		- annotations of arguments
+@annotation	- based on annotations on a method
+
+bean		- limits to beans with specified beans/* expressions.
+
+example:
+@PointCut("execution(public * * (..))")			- any public method
+private void anyPublicOperation() {}
+@PointCut("within(com.xyz..*)")				- in trading package all public methods
+private void inTrading() {}
+@PointCut("anyPublicOperation() && inTrading()")	- all public methods in trading
+private void tradingOperation() {}
+
+-----------------------------------------------
+7. Parameter binding
+
+szűrés és hozzáférés
+
+@annotation, @within, args, @args, this, target, @target
+
+pl.:
+
+@Before("@annotation(auditable)")
+public void audit(Auditable auditable) { ... }
+
+@PointCut("args(account,..)")
+private accountDataAccessOperation(Account account) {}
+@Before("accountDataAccessOperation(account)")
+public void validateAccount(Account account) {
+...
+}
+
+
+
+
+futásidőben lehet, hogy nincsenek meg a nevek (auditable, account, stb.)
+
+@Before(value=com.xyz.lib.Pointcuts.anyPublicMethod() && target(bean) && @annotation(auditable)"
+        argNames="bean,auditable")
+public void audit(JoinPoint jp, Object bean, Auditable auditable) {
+    AuditCode code = auditable.value();
+    ...
+}
+strategies:
+a. argNames
+b. debug information
+c. parameter deduction
+d. throws illegalArgumentException
+
+(A target pl. kiválthatja a JoinPoint-ot, de nem muszáj kihagyni. Ha marad, akkor a joinPoint legyen az első)
+
+-----------------------------------------------
+8. Precendencia
+
+Two before - higher reference runs first the way in
+Two After  - higher reference runs later the way out
