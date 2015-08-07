@@ -139,3 +139,7 @@ d. throws illegalArgumentException
 
 Two before - higher reference runs first the way in
 Two After  - higher reference runs later the way out
+Around     - higher runs first and runs later in/out
+
+Ha nem adunk meg ordert, akkor a lefutás undefined. Egyébként @Ordered annotation az Aspect-re.
+Ha két advice fut ugyanabban az aspect-ben ugyanarra PointCut-ra, akkor az order undefined.
