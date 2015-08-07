@@ -137,9 +137,29 @@ d. throws illegalArgumentException
 -----------------------------------------------
 8. Precendencia
 
-Two before - higher reference runs first the way in
-Two After  - higher reference runs later the way out
+Two before - higher reference runs first the way in   (higher reference = lower value)
+Two After  - higher reference runs later the way out  (higher reference = lower value)
 Around     - higher runs first and runs later in/out
 
-Ha nem adunk meg ordert, akkor a lefutás undefined. Egyébként @Ordered annotation az Aspect-re.
-Ha két advice fut ugyanabban az aspect-ben ugyanarra PointCut-ra, akkor az order undefined.
+Ha két advice fut eltérő aspect-ben de ugyanarra a PointCut-ra, akkor ha nem adunk meg ordert, akkor a lefutás undefined. Egyébként @Ordered annotation az Aspect-re vagy implementálni az Ordered interface-t.
+Ha két advice fut ugyanabban az aspect-ben ugyanarra PointCut-ra, akkor az order undefined. (Esetleg összerakni egy advice-ben, vagy szétszedni két aspectre).
+
+-----------------------------------------------
+9. Introduction
+
+Adviced object-nek adok egy interface-t, amit nem implementál, de futás időben fog implementálni.
+@Aspect
+public class UsageTracking {
+	@DeclareParents(value="com.xyz.myapp.service.*+",						// ezen class-oknak kell implementálni
+		 defaultImpl=DefaultUsageTracked.class)							// default Implementáció
+	public static UsageTracked mixin;								// az interfész
+	
+	@Before("com.xyz.myapp.SystemArchitecture.businessService() && this(usageTracked)")
+	public void recordUsage(UsageTracked usageTracked) {
+		usageTracked.incrementUseCount();
+	}
+
+Spring-ben:
+
+UsageTracked usageTracked = (UsageTracked) context.getBean("myService");
+Az introduction (DefaultUsageTracked pl.) instatiable-nek kell lennie, tehát nem absztrakt és default constructor legyen.
