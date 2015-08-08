@@ -1,0 +1,99 @@
+1. Spring MVC
+
+- Web MVC Framework
+- Összelõhetõ különbözõ egyéb Framework-ökkel (pl.: JSF, struts)
+- Elrendezést pluginokkal is megoldhatjuk (Apache-tiles, SiteMesh)
+- De használhatunk lightweight eszközöket is a view-inkhoz (Freemarker, Velocity)
+
+- A Front Controller design patternt valósítja meg dispatcherServleten keresztül.
+  Röviden:
+  A Front Controller delegálja a kéréseket a dispatcherServleten keresztül az általunk írt controllernek.
+  A SpringMVC dönti el, hogy hova küldjük tovább.
+  A web.xml-beíígy elég nekünk csak a dispatcherServletet felvenni.
+  Tehát a Front Controller megteszi az alap dolgokat, nekünk csak a controllert kell megírnunk. Ami pedig a modelt adja vissza a viewnak.
+
+-----------------------------------------------
+2. Alap annotációk
+
+@Controller annotáció:		class	ezzel készíthetünk egy új controllert.
+
+Handler metódus:
+
+@RequestMapping("/"):			metód	pl: "/", ezzel mondjuk meg, hogy hova mappeljük a controllert.
+public String homepage() {
+	return "homepage"		ez a visszatérési érték határozza meg, hogy mit renderelünk a usernek.
+}
+
+@ModelAttribute("bookshopName"):	metód	pl: "bookshopName", ezzel mondjuk meg, hogy ez a metód egy olyan factory metód, ami olyan értéket ad vissza, amit bele kellene tenni a jspContext-be. Ez a request.setAttribute("bookshopName", "Bookshop") hívással egyenértékû.
+public String bookshopName() {
+	return "Bookshop";
+}
+
+A requestMapping metódusok elõtt hívja meg a ModelAttribute-okat, legyen szó akármennyirõl is.
+
+-----------------------------------------------
+3. Összehuzalozás
+
+<context:component-scan base-package="..."/>
+<mvc:annotation-driven />
+
+<bean class="org.springframework.web.servlet.view.InternalresourceViewResolver">
+	<property name="prefix" value="/WEB-INF/view/"/>
+	<property name="suffix" value=".jsp"/>
+</bean>
+
+Ez a bean arra való, hogy classpath resource-hoz navigáljon minket. Ez fogja feloldani a RequestMapping által visszaadott értéket.
+Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévként lesz értelmezve. Elõtte, utána konkatenálunk prefix-szel és suffix-szel. Ez csak JSP-t tud feloldani, de pl az InternalViewResolver már servletet is.
+
+A homepage.jsp esetén a ${bookshopName} használható lesz.
+
+<servlet>
+	<servlet-name>bookshop</>
+	<servlet-class>org.springframework.web.servlet.DispatcherServlet
+
+	<init-param>
+		<param-name>contextConfigLocation
+		<param-value>classpath:spring/mvc-context.xml // mert am]gz a WEBINF/ben keresn;
+	</init-param>
+	<load-on-startup>1
+</servlet>
+
+<servlet-mapping>
+	<servlet-name>bookshop
+	<url-pattern>/
+</servlet-mapping>
+
+-----------------------------------------------
+4. RequestMapping in details
+
+Sokfajta requestmappinget támogat az MVC RequestMappingHandlerMapping segítségével.
+Narrowing requestmapping:
+
+Consumable media type:
+
+@RequestMapping(value="/",
+consumes="application/json")
+if Content-Type in request equals "application/json"
+
+Producible media type:
+
+@RequestMapping(value="/",
+produces="application/json")
+if Accept equals the above ones, then this will run.
+
+method:
+
+@RequestMapping(value="/", method=RequestMethod.GET)
+@RequestMapping(value="/", method=RequestMethod.POST)
+
+Request Parameter:
+
+myParam
+!myParam
+myParam=12
+myParam=myValue
+@RequestMapping(value="/", params="myParam")
+
+Header value alapján, ugyanaz, mint a request parameter-nél.
+
+header="myParam=myvalue"
