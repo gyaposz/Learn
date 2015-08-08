@@ -56,6 +56,9 @@ Aspect = Advice + PointCut (When+What + Where)
 			- no-arg constructor is required
 			- constructor runs twice (1 target, 1 proxy)
 			- since Spring 3.2 in spring-core.jar
+
+Aspectek alapvetően singleton-ok, tulajdonképpen meg lehet ezt változtatni.
+
 -----------------------------------------------
 4. Force CGLIB
 
@@ -163,3 +166,56 @@ Spring-ben:
 
 UsageTracked usageTracked = (UsageTracked) context.getBean("myService");
 Az introduction (DefaultUsageTracked pl.) instatiable-nek kell lennie, tehát nem absztrakt és default constructor legyen.
+
+-----------------------------------------------
+10. Method injection
+
+Spring Core része.
+CGLIB-bel megy. non-final classes only, no-arg constructor needed. Object not serializable.
+
+Lookup method - valami hívás esetén valami más történjen. Vagy:
+
+public abstract class CommandMananger {
+	public Object process(Object commandState) {
+		Command command = createCommand();
+		return command.execute();
+	}
+}
+
+protected abstract Command createCommand();
+
+<bean id="command" class="AsyncCommand" scope="prototype" />
+
+<bean id="commandManager" class="CommandManager">
+	<lookup-method name="createCommand" bean="command"/>
+</bean>
+
+-----------------------------------------------
+11. Configurable
+
+Ha az objektumokat nem a Spring Container csinálja, akkor mi van?
+Pl.: new, deserialization, Hibernate, databaseQuery
+
+Itt Spring AOP nem használható, AspectJ kell itt! Itt nem proxy-t fogunk használni, hanem loadtime Weaver.
+
+Ha mégis Spring AOP-t akarunk használni, akkor tegyük rá a @Configurable annotációt az objektumra. Itt a Spring AOP-n keresztül használjuk már az AspectJ.
+AnnotationBeanConfigurerAspect processzál (nem BeanPostProcessor)
+
+- Ehhez kell egy aspect ami @Configurable-t megérti.
+- spring-aspects.jar (contains aspect)
+- spring-instrument (instumentáláshoz)
+- spring-tx.jar (non-essential, just to remove complaints in debug log)
+- <context:spring-configured>
+
+Enable LTW:
+
+- <context:load-time-weaver/>
+- javaagent:path/to/org.springframework.instrument-{version}.jar - path: .m2/repository/org.springframework/spring-instrument.
+
+Ne használjuk normal bean-eken. A @Configurable object instances később kell létrehozni, mint az aspect-et: "depends-on"!
+Innentől kezdve lehet @Autowired, @Resource, stb.
+
+Vigyázat. Classloader futása során fog ez történni. Tehát az nem megy, hogy
+new XY();
+ApplicationContext start;
+new XY(); --- Itt már nem megy a dolog, classloader lefutott.
