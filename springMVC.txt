@@ -9,7 +9,7 @@
   Röviden:
   A Front Controller delegálja a kéréseket a dispatcherServleten keresztül az általunk írt controllernek.
   A SpringMVC dönti el, hogy hova küldjük tovább.
-  A web.xml-beíígy elég nekünk csak a dispatcherServletet felvenni.
+  A web.xml-be így elég nekünk csak a dispatcherServletet felvenni.
   Tehát a Front Controller megteszi az alap dolgokat, nekünk csak a controllert kell megírnunk. Ami pedig a modelt adja vissza a viewnak.
 
 -----------------------------------------------
@@ -29,6 +29,8 @@ public String bookshopName() {
 	return "Bookshop";
 }
 
+A homepage.jsp esetén a ${bookshopName} használható lesz.
+
 A requestMapping metódusok elõtt hívja meg a ModelAttribute-okat, legyen szó akármennyirõl is.
 
 -----------------------------------------------
@@ -45,15 +47,13 @@ A requestMapping metódusok elõtt hívja meg a ModelAttribute-okat, legyen szó aká
 Ez a bean arra való, hogy classpath resource-hoz navigáljon minket. Ez fogja feloldani a RequestMapping által visszaadott értéket.
 Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévként lesz értelmezve. Elõtte, utána konkatenálunk prefix-szel és suffix-szel. Ez csak JSP-t tud feloldani, de pl az InternalViewResolver már servletet is.
 
-A homepage.jsp esetén a ${bookshopName} használható lesz.
-
 <servlet>
 	<servlet-name>bookshop</>
 	<servlet-class>org.springframework.web.servlet.DispatcherServlet
 
 	<init-param>
 		<param-name>contextConfigLocation
-		<param-value>classpath:spring/mvc-context.xml // mert am]gz a WEBINF/ben keresn;
+		<param-value>classpath:spring/mvc-context.xml // mert amúgy a WEB-INF-ben keresné
 	</init-param>
 	<load-on-startup>1
 </servlet>
@@ -98,7 +98,7 @@ Header value alapján, ugyanaz, mint a request parameter-nél.
 
 header="myParam=myvalue"
 
-Lehetõleg csak egy requestMapping legyen egy controller-ben. Mert a hozzá szükséges ModelAttribute lefut, de az összes. Ha a modelAttribute közben DB-hez is nyúlunk, akkor performanciát vesztünk.
+Lehetõleg csak egy requestMapping legyen egy controller-ben. Mert a hozzá szükséges ModelAttribute lefut, de az összes. Ha a felesleges modelAttribute közben DB-hez is nyúlunk, akkor performanciát vesztünk.
 
 -----------------------------------------------
 5. Handler paraméterek, de mûködik modelAttribute esetén is.
@@ -129,7 +129,7 @@ public String homepage(Model model) {
 5. Handler visszatérési értékek
 
 - String - logikai nevek a weboldalhoz
-- Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a modelt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni.
+- Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a viewt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni.
 - View objektummal is visszatérhetünk.
 - ModelAndView-val is vissza lehet térni. return new ModelAndView("homepage", model.asMap());
 
