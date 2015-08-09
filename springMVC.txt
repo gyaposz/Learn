@@ -97,3 +97,64 @@ myParam=myValue
 Header value alapján, ugyanaz, mint a request parameter-nél.
 
 header="myParam=myvalue"
+
+Lehetõleg csak egy requestMapping legyen egy controller-ben. Mert a hozzá szükséges ModelAttribute lefut, de az összes. Ha a modelAttribute közben DB-hez is nyúlunk, akkor performanciát vesztünk.
+
+-----------------------------------------------
+5. Handler paraméterek, de mûködik modelAttribute esetén is.
+
+flexibilis, a sorrend tetszõleges.
+
+- HttpServletRequest
+- HttpServletResponse
+- HttpSession - triviálisak.
+Ezeket a Spring MVC magától tölti ki. Nem kötelezõ, a servlet API low level dolgaival nem feltétlenül kell foglalkoznunk, csak ha nagyon kell.
+
+- IOStream
+- readers, stb támogatott de nem javasolt.
+
+- @RequestParam
+Viszont lehet olyat, hogy: public String page(@RequestParam("paramName") String param)
+Ekkor a SpringMVC kiveszi nekünk a paramName-et a requestbõl és beteszi paramba.
+
+- Model
+Ez a model, amit látni fog a JSP. Mintha be lenne kopizva a request attributumok között. A model mindig egy map.
+public String homepage(Model model) {
+	model.addAttribute("currentDate", new Date());
+}
+
+És még sok mást is lehet, referenciát/doksit érdemes olvasni.
+
+-----------------------------------------------
+5. Handler visszatérési értékek
+
+- String - logikai nevek a weboldalhoz
+- Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a modelt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni.
+- View objektummal is visszatérhetünk.
+- ModelAndView-val is vissza lehet térni. return new ModelAndView("homepage", model.asMap());
+
+-----------------------------------------------
+6. Forward és redirect
+
+"redirect:files" - Redirectview a visszatérési érték ilyenkor. Ekkor a files nem egy logikai view, hanem egy path/URL.
+
+"forward:homepage.do" - Forward esetén is URL. pl:
+
+RequestMapping(value="/h/g/x.do")
+...
+return "redirect:homepage" -> /h/g/homepage
+return "redirect:/homepage" -> /homepage
+return "redirect:/c/homepage" -> /c/homepage
+return "redirect:c/homepage" -> /h/g/c/homepage
+
+-----------------------------------------------
+7. Logikai view name feloldása (View resolution)
+
+Többfajta van, nem feltétlenül logikai nevekkel dolgoznak.
+Lehetnek a view nevek explicitek vagy implicitek.
+
+- InternalResourceviewResolver - Servlet, JSP
+- XmlViewResolver - xml configuration file for mapping between jsp and view name
+- ContentNegotiatingViewResolver
+
+22:00
