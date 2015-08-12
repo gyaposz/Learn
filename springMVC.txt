@@ -1,40 +1,40 @@
-1. Spring MVC
+ï»¿1. Spring MVC
 
 - Web MVC Framework
-- Összelõhetõ különbözõ egyéb Framework-ökkel (pl.: JSF, struts)
-- Elrendezést pluginokkal is megoldhatjuk (Apache-tiles, SiteMesh)
-- De használhatunk lightweight eszközöket is a view-inkhoz (Freemarker, Velocity)
+- Ã–sszelÃµhetÃµ kÃ¼lÃ¶nbÃ¶zÃµ egyÃ©b Framework-Ã¶kkel (pl.: JSF, struts)
+- ElrendezÃ©st pluginokkal is megoldhatjuk (Apache-tiles, SiteMesh)
+- De hasznÃ¡lhatunk lightweight eszkÃ¶zÃ¶ket is a view-inkhoz (Freemarker, Velocity)
 
-- A Front Controller design patternt valósítja meg dispatcherServleten keresztül.
-  Röviden:
-  A Front Controller delegálja a kéréseket a dispatcherServleten keresztül az általunk írt controllernek.
-  A SpringMVC dönti el, hogy hova küldjük tovább.
-  A web.xml-be így elég nekünk csak a dispatcherServletet felvenni.
-  Tehát a Front Controller megteszi az alap dolgokat, nekünk csak a controllert kell megírnunk. Ami pedig a modelt adja vissza a viewnak.
+- A Front Controller design patternt valÃ³sÃ­tja meg dispatcherServleten keresztÃ¼l.
+  RÃ¶viden:
+  A Front Controller delegÃ¡lja a kÃ©rÃ©seket a dispatcherServleten keresztÃ¼l az Ã¡ltalunk Ã­rt controllernek.
+  A SpringMVC dÃ¶nti el, hogy hova kÃ¼ldjÃ¼k tovÃ¡bb.
+  A web.xml-be Ã­gy elÃ©g nekÃ¼nk csak a dispatcherServletet felvenni.
+  TehÃ¡t a Front Controller megteszi az alap dolgokat, nekÃ¼nk csak a controllert kell megÃ­rnunk. Ami pedig a modelt adja vissza a viewnak.
 
 -----------------------------------------------
-2. Alap annotációk
+2. Alap annotÃ¡ciÃ³k
 
-@Controller annotáció:		class	ezzel készíthetünk egy új controllert.
+@Controller annotÃ¡ciÃ³:		class	ezzel kÃ©szÃ­thetÃ¼nk egy Ãºj controllert.
 
-Handler metódus:
+Handler metÃ³dus:
 
-@RequestMapping("/"):			metód	pl: "/", ezzel mondjuk meg, hogy hova mappeljük a controllert.
+@RequestMapping("/"):			metÃ³d	pl: "/", ezzel mondjuk meg, hogy hova mappeljÃ¼k a controllert.
 public String homepage() {
-	return "homepage"		ez a visszatérési érték határozza meg, hogy mit renderelünk a usernek.
+	return "homepage"		ez a visszatÃ©rÃ©si Ã©rtÃ©k hatÃ¡rozza meg, hogy mit renderelÃ¼nk a usernek.
 }
 
-@ModelAttribute("bookshopName"):	metód	pl: "bookshopName", ezzel mondjuk meg, hogy ez a metód egy olyan factory metód, ami olyan értéket ad vissza, amit bele kellene tenni a jspContext-be. Ez a request.setAttribute("bookshopName", "Bookshop") hívással egyenértékû.
+@ModelAttribute("bookshopName"):	metÃ³d	pl: "bookshopName", ezzel mondjuk meg, hogy ez a metÃ³d egy olyan factory metÃ³d, ami olyan Ã©rtÃ©ket ad vissza, amit bele kellene tenni a jspContext-be. Ez a request.setAttribute("bookshopName", "Bookshop") hÃ­vÃ¡ssal egyenÃ©rtÃ©kÃ».
 public String bookshopName() {
 	return "Bookshop";
 }
 
-A homepage.jsp esetén a ${bookshopName} használható lesz.
+A homepage.jsp esetÃ©n a ${bookshopName} hasznÃ¡lhatÃ³ lesz.
 
-A requestMapping metódusok elõtt hívja meg a ModelAttribute-okat, legyen szó akármennyirõl is.
+A requestMapping metÃ³dusok elÃµtt hÃ­vja meg a ModelAttribute-okat, legyen szÃ³ akÃ¡rmennyirÃµl is.
 
 -----------------------------------------------
-3. Összehuzalozás
+3. Ã–sszehuzalozÃ¡s
 
 <context:component-scan base-package="..."/>
 <mvc:annotation-driven />
@@ -44,8 +44,9 @@ A requestMapping metódusok elõtt hívja meg a ModelAttribute-okat, legyen szó aká
 	<property name="suffix" value=".jsp"/>
 </bean>
 
-Ez a bean arra való, hogy classpath resource-hoz navigáljon minket. Ez fogja feloldani a RequestMapping által visszaadott értéket.
-Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévként lesz értelmezve. Elõtte, utána konkatenálunk prefix-szel és suffix-szel. Ez csak JSP-t tud feloldani, de pl az InternalViewResolver már servletet is.
+Ez a bean arra valÃ³, hogy classpath resource-hoz navigÃ¡ljon minket. Ez fogja feloldani a RequestMapping Ã¡ltal visszaadott Ã©rtÃ©ket.
+Ennek a beannek a RequestMapping Ã¡ltal visszaadott logikai nÃ©v egy fÃ¡jlnÃ©vkÃ©nt lesz Ã©rtelmezve. ElÃµtte, utÃ¡na konkatenÃ¡lunk prefix-szel Ã©s suffix-szel.
+Ez csak JSP-t tud feloldani, de pl az InternalViewResolver mÃ¡r servletet is. Ez utÃ³bbi mondat szerintem hÃ¼lyesÃ©g, nem talÃ¡ltam InternalViewResolvert.
 
 <servlet>
 	<servlet-name>bookshop</>
@@ -53,7 +54,7 @@ Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévként l
 
 	<init-param>
 		<param-name>contextConfigLocation
-		<param-value>classpath:spring/mvc-context.xml // mert amúgy a WEB-INF-ben keresné
+		<param-value>classpath:spring/mvc-context.xml // mert amÃºgy a WEB-INF-ben keresnÃ©
 	</init-param>
 	<load-on-startup>1
 </servlet>
@@ -66,7 +67,7 @@ Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévként l
 -----------------------------------------------
 4. RequestMapping in details
 
-Sokfajta requestmappinget támogat az MVC RequestMappingHandlerMapping segítségével.
+Sokfajta requestmappinget tÃ¡mogat az MVC RequestMappingHandlerMapping segÃ­tsÃ©gÃ©vel.
 Narrowing requestmapping:
 
 Consumable media type:
@@ -94,51 +95,51 @@ myParam=12
 myParam=myValue
 @RequestMapping(value="/", params="myParam")
 
-Header value alapján, ugyanaz, mint a request parameter-nél.
+Header value alapjÃ¡n, ugyanaz, mint a request parameter-nÃ©l.
 
 header="myParam=myvalue"
 
-Lehetõleg csak egy requestMapping legyen egy controller-ben. Mert a hozzá szükséges ModelAttribute lefut, de az összes. Ha a felesleges modelAttribute közben DB-hez is nyúlunk, akkor performanciát vesztünk.
+LehetÃµleg csak egy requestMapping legyen egy controller-ben. Mert a hozzÃ¡ szÃ¼ksÃ©ges ModelAttribute lefut, de az Ã¶sszes. Ha a felesleges modelAttribute kÃ¶zben DB-hez is nyÃºlunk, akkor performanciÃ¡t vesztÃ¼nk.
 
 -----------------------------------------------
-5. Handler paraméterek, de mûködik modelAttribute esetén is.
+5. Handler paramÃ©terek, de mÃ»kÃ¶dik modelAttribute esetÃ©n is.
 
-flexibilis, a sorrend tetszõleges.
+flexibilis, a sorrend tetszÃµleges.
 
 - HttpServletRequest
 - HttpServletResponse
-- HttpSession - triviálisak.
-Ezeket a Spring MVC magától tölti ki. Nem kötelezõ, a servlet API low level dolgaival nem feltétlenül kell foglalkoznunk, csak ha nagyon kell.
+- HttpSession - triviÃ¡lisak.
+Ezeket a Spring MVC magÃ¡tÃ³l tÃ¶lti ki. Nem kÃ¶telezÃµ, a servlet API low level dolgaival nem feltÃ©tlenÃ¼l kell foglalkoznunk, csak ha nagyon kell.
 
 - IOStream
-- readers, stb támogatott de nem javasolt.
+- readers, stb tÃ¡mogatott de nem javasolt.
 
 - @RequestParam
 Viszont lehet olyat, hogy: public String page(@RequestParam("paramName") String param)
-Ekkor a SpringMVC kiveszi nekünk a paramName-et a requestbõl és beteszi paramba.
+Ekkor a SpringMVC kiveszi nekÃ¼nk a paramName-et a requestbÃµl Ã©s beteszi paramba.
 
 - Model
-Ez a model, amit látni fog a JSP. Mintha be lenne kopizva a request attributumok között. A model mindig egy map.
+Ez a model, amit lÃ¡tni fog a JSP. Mintha be lenne kopizva a request attributumok kÃ¶zÃ¶tt. A model mindig egy map.
 public String homepage(Model model) {
 	model.addAttribute("currentDate", new Date());
 }
 
-És még sok mást is lehet, referenciát/doksit érdemes olvasni.
+Ã‰s mÃ©g sok mÃ¡st is lehet, referenciÃ¡t/doksit Ã©rdemes olvasni.
 
 -----------------------------------------------
-5. Handler visszatérési értékek
+5. Handler visszatÃ©rÃ©si Ã©rtÃ©kek
 
 - String - logikai nevek a weboldalhoz
-- Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a viewt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni.
-- View objektummal is visszatérhetünk.
-- ModelAndView-val is vissza lehet térni. return new ModelAndView("homepage", model.asMap());
+- Model-lel is vissza lehet tÃ©rni. Convention over configuration. Nem kell visszaadnunk a viewt, azt hiszem, hogy a RequestMapping-bÃµl fogja kitalÃ¡lni, hogy mi lesz a megjelenÃ­tendÃµ view. RequestToViewNameTranslator fogja ezt a kitalÃ¡lÃ¡st elvÃ©gezni.
+- View objektummal is visszatÃ©rhetÃ¼nk.
+- ModelAndView-val is vissza lehet tÃ©rni. return new ModelAndView("homepage", model.asMap());
 
 -----------------------------------------------
-6. Forward és redirect
+6. Forward Ã©s redirect
 
-"redirect:files" - Redirectview a visszatérési érték ilyenkor. Ekkor a files nem egy logikai view, hanem egy path/URL.
+"redirect:files" - Redirectview a visszatÃ©rÃ©si Ã©rtÃ©k ilyenkor. Ekkor a files nem egy logikai view, hanem egy path/URL.
 
-"forward:homepage.do" - Forward esetén is URL. pl:
+"forward:homepage.do" - Forward esetÃ©n is URL. pl:
 
 RequestMapping(value="/h/g/x.do")
 ...
@@ -148,13 +149,67 @@ return "redirect:/c/homepage" -> /c/homepage
 return "redirect:c/homepage" -> /h/g/c/homepage
 
 -----------------------------------------------
-7. Logikai view name feloldása (View resolution)
+7. Logikai view name feloldÃ¡sa (View resolution)
 
-Többfajta van, nem feltétlenül logikai nevekkel dolgoznak.
+TÃ¶bbfajta van, nem feltÃ©tlenÃ¼l logikai nevekkel dolgoznak.
 Lehetnek a view nevek explicitek vagy implicitek.
 
-- InternalResourceviewResolver - Servlet, JSP
+- InternalResourceviewResolver - Servlet, JSP Ã©s leszÃ¡rmazottaik, mint JstlView (InternalResourceView-ek Ã¶sszefoglalÃ³ nÃ©ven)
 - XmlViewResolver - xml configuration file for mapping between jsp and view name
-- ContentNegotiatingViewResolver
+- ContentNegotiatingViewResolver - delegÃ¡tor, ami mÃ¡s viewresolvereknek delegÃ¡lja a munkÃ¡t. Pl az URL alapjÃ¡n, hogy milyen extension-je van. Lehet akÃ¡r header alapjÃ¡n is, pl: Accept="application/pdf"
 
-22:00
+-----------------------------------------------
+8. View resolverek chainelÃ©se
+
+A sorrendet explicit beÃ¡llÃ­thatjuk.
+Default chain esetÃ©n az lesz a nyerÅ‘ resolver, amelyik elÅ‘szÃ¶r ad nem null Ã©rtÃ©ket. A ContentNegotiatingViewResolver azonban a legjobban illeszkedÅ‘t vÃ¡lasztja Ã©s mindet kigenerÃ¡lja. Ha mindegyik null-t ad vissza, akkor server exception-t dobunk. lehet order-t megadni, de nem kÃ¶telezÅ‘. (Ha a leggyakoribbat adom meg elsÅ‘nek, nyerhetek performanciÃ¡t.) Mondjuk egy 0-Ã¡s jspresolvert csinÃ¡lunk, meg egy 1-es pdf-eset.
+
+-----------------------------------------------
+9. Request processing
+
+Accepting request -> dispatcher servlet -> resolving view -> render view
+
+Accepting request:
+- tomcat detects incoming request
+- EldÃ¶nti, hogy melyik root context felÃ© kell kÃ¼ldeni URL alapjÃ¡n
+- web.xml alapjÃ¡n ezt a DispatcherServlet-nek tovÃ¡bbkÃ¼ldi
+- DispatcherServlet a Spring Context-ben Ã©l, ismeri a Controllereket. megprÃ³bÃ¡lja oda dispatche-elni a requestet.
+
+Dispatcher servlet:
+- RequestMappingHandlerMapping alapjÃ¡n eldÃ¶nti, hogy a szÅ±kÃ­tÃ©sek alapjÃ¡n melyik Controller illik a requestre (path szÅ±kÃ­tÃ©s, produces szÅ±kÃ­tÃ©s, stb.).
+- Mivel sok signature-je lehet a handlernek, meg kell nÃ©zni, milyen paramÃ©tert vÃ¡r egy ilyen metÃ³dus, ezÃ©rt ezeket mÃ©g elÅ‘ kell Ã¡llÃ­tania Ã©s azzal meghÃ­vni.
+
+Resolving view:
+- Vagy elszÃ¡llunk valami exception-nel a handler lefutÃ¡sa utÃ¡n, vagy
+- visszatÃ©rÃ¼nk egy Ã©rtÃ©kkel, amit a DispatcherSerlvet a view resolver chain-nek ad Ã¡t.
+- A view resolverek megtalÃ¡ljÃ¡k a megfelelÅ‘ renderelni kÃ­vÃ¡nt view.t
+
+Rendering view:
+- View resolver eredmÃ©nye a response tartalma
+- Renderelt response visszakerÃ¼l a servlet container-hez, innen pedig a clienthez.
+
+-----------------------------------------------
+10. Best practices / EPAM standards
+
+- Resource:
+	- Default-bÃ³l a WEB-INF-be pakolja a spring-es context.xml-t. Nem szoktuk, inkÃ¡bb a classpath-ra tesszÃ¼k, valami separate package-be instead. tehÃ¡t classpath:
+	- JSP-k a WEB-INF folderben, mert az vÃ©dett kÃ¶nyvtÃ¡r. (Ha nem itt van, akkor a JSP-ket simÃ¡n olvasnÃ¡nk szÃ¶vegkÃ©nt, nem pedig generÃ¡lt html-kÃ©nt.)
+- Controller:
+	- @ModelAttribute-ot hasznÃ¡ljuk a model helyett.
+	- Request, response, session, model kerÃ¼lÃ©se.
+	- Ã‰s kerÃ¼ljÃ¼k a tÃ¶bb handlert is egy controllerben.
+- Maradjunk Spring MVC-ben, amikor csak lehet. De igyekezzÃ¼nk ne kÃ¶rbehackelni a servlet API-val.
+- pom.xml-be ne tegyÃ¼nk extra fÃ¼ggÅ‘sÃ©get
+
+-----------------------------------------------
+11. N-tier web applications in Spring MVC
+
+KÃ¼lÃ¶nbÃ¶zÅ‘ rÃ©tegek kÃ¼lÃ¶nbÃ¶zÅ‘ contextben.
+- Context hierarchy:
+	- fÃ¡ba rendezÅ‘dnek. SzÃ¼lÅ‘ nem ismeri a gyereket, gyerek lÃ¡tja a szÃ¼lÅ‘ beanjeit.
+	- alapvetÅ‘en kettÅ‘ context-et tÃ¡mogat a spring MVC, de nem akadÃ¡lyoz meg minket, hogy tÃ¶bb is legyen.
+	- miÃ©rt jÃ³?	layereket el tudjuk egymÃ¡stÃ³l vÃ¡lasztani. (pl.: DB kezelÃ©shez minek controller?)
+			elzÃ¡rni beaneket egymÃ¡stÃ³l. Az a rÃ©teg, ami a DB-vel kapcsolatban, ne hÃ­vjon meg view-val kapcsolatos dolgokat. fordÃ­tva talÃ¡n igen, de cirkulÃ¡ris referencia elkerÃ¼lÃ©se fontos.
+	- ÃšjrafelhasznÃ¡lhatÃ³ layerek. Standardisation, maintainability, testability, easier enhancement, distributed development, layers can be modified independently.
+
+3/12 - 12:00
