@@ -1,18 +1,58 @@
-gitk &			- vizuális verzió rendszer
-git add filename	- az új file neve, vagy file staging-be
-git branch -r		- elérhetõ remote branch-ek
-git commit -m "cm"	- commenttel együtt commitálunk
-git commit -am "cm"	- commenttel együtt commitálunk, de elõtte nem kell add, viszont csak a trackelt file-okra megy.
-git diff		- working directory/staging area-t lehet a repo-val összehasonlítani
-git help pn		- a pn parancs helpjét dobja fel
-git init projektname	- új gites projekt projektname-mel
-git log			- eddigi commitok.
-git log -p		- eddigi commit konkrét változtatásokkal
-git log -3		- utolsó 3 commit
-git log --author name	- eddigi commitok name-tõl
-git log --all		- összes eddigi commit
-git log --oneline	- eddigi commitok egy sorba.
-git rm --cached fn	- töröl egy fn file-t a staging area-ból
-git reseh HEAD fn	- visszaállítja a fn file státuszát. Ha staging area-ban volt, akkor kiveszi onnan
-git show		- elõzõ verzióhoz képest a file-ban mi változott
-git status		- mi a helyzet jelenleg
+Git 6/8 vége
+
+.gitignore			- untrackelt file-ok
+forkolás			- ha nem lehet pusholni, akkor weboldalon leforkolunk, clone, work és pull requestet innen indítunk.
+master-t merge-ljük		- a master címkét tesszük át valahova
+egyéb branch-et mergelünk	- masteren lévõ dolgok frissítsék az egyéb branchet.
+
+gitk &				- vizuális verzió rendszer
+git add .			- minden untrackelt file-t trackeltté tesz
+git add filename		- az új file neve, vagy file staging-be
+git branch			- branchek
+git branch -d bn		- bn branch törlése (ha mergelt)
+git branch -D bn		- bn branch törlése (akár mergelt, akár nem)
+git branch -m bn		- az aktuális branchet átnevezi bn-re
+git branch -r			- elérhetõ remote branch-ek
+git branch bn			- új git branch létrehozása
+git branch --merge		- merge-lt branchek
+git branch --no-merged		- nem merge-lt branchek
+git cat-file -p hash		- kiírja a hash-hez tartozó file-t
+git cat-file -t hash		- kiírja a hash-hez tartozó file típusát
+git checkout bn			- átswitchelni a bn branchre
+git checkout -b bn		- átswitchelni egy akár nem is létezõ bn branchre
+git clone ...			- távoli branchet lemásolunk magunkhoz (lefuttatja a git init-et, beállít egy remote repot és leszed mindent).
+git commit -m "cm"		- commenttel együtt commitálunk
+git commit -am "cm"		- commenttel együtt commitálunk, de elõtte nem kell add, viszont csak a trackelt file-okra megy.
+git config --list 		- összes konfigurációs beállítás
+git config --list --global	- összes globális konfigurációs beállítás
+git config --list --local	- összes lokális konfigurációs beállítás
+git config --list --system	- összes rendszer konfigurációs beállítás
+git config --global user.name	- user nevének beállítása
+git config --local cn value	- cn konfigurációt beállítunk value-ra
+git diff			- working directory/staging area-t lehet a repo-val összehasonlítani
+git difftool			- a beállított grafikus eszköz mutatja a változást.
+git fetch origin		- távoli repo lehúzása (ekkor az origin/master update-lõdik, de a master nem)
+git help pn			- a pn parancs helpjét dobja fel
+git init projektname		- új gites projekt projektname-mel
+git log				- eddigi commitok.
+git log -p			- eddigi commit konkrét változtatásokkal
+git log -3			- utolsó 3 commit
+git log --author name		- eddigi commitok name-tõl
+git log --all			- összes eddigi commit
+git log --oneline		- eddigi commitok egy sorba.
+git merge bn			- az aktuális branchre rágörgeti a bn változásait
+git mergetool			- conflict esetén
+git pull			- git fetch + git merge
+git pull --rebase		- git fetch + git rebase
+git push -u origin master	- origin távoli repo master branch-ébe felpusholunk, -u tracking-gel.
+git rebase bn			- merge helyett, visszamenni közös õsig, majd a rájátszani bn-re az aktuális branch változásait. bn nem módosul
+git rebase origin/master	- git fetch után: origin/master-re teszi a master-t.
+git remote			- távoli repo lista
+git remote -v			- távoli repo lista eléréssel és metódussal (fetch, push)
+git remote add repo		- új remote repo hozzáadása
+git rm fn			- fn filenevû filet törli.
+git rm --cached fn		- töröl egy fn file-t a staging area-ból
+git reset HEAD fn		- visszaállítja a fn file státuszát. Ha staging area-ban volt, akkor kiveszi onnan
+git show			- elõzõ verzióhoz képest a file-ban mi változott
+git show-branch			- milyen commitok voltak a branchen grafikusan
+git status			- mi a helyzet jelenleg
