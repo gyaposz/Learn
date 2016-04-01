@@ -49,19 +49,19 @@ Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévk�
 Ez csak JSP-t tud feloldani, de pl az InternalViewResolver már servletet is. Ez utóbbi mondat szerintem hülyeség, nem találtam InternalViewResolvert.
 
 <servlet>
-	<servlet-name>bookshop</>
-	<servlet-class>org.springframework.web.servlet.DispatcherServlet
+	<servlet-name>bookshop</servlet-name>
+	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 
 	<init-param>
-		<param-name>contextConfigLocation
-		<param-value>classpath:spring/mvc-context.xml // mert amúgy a WEB-INF-ben keresné
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring/mvc-context.xml</param-value> // mert amúgy a WEB-INF-ben keresné
 	</init-param>
-	<load-on-startup>1
+	<load-on-startup>1</load-on-startup>
 </servlet>
 
 <servlet-mapping>
-	<servlet-name>bookshop
-	<url-pattern>/
+	<servlet-name>bookshop</servlet-name>
+	<url-pattern>/</url-pattern>
 </servlet-mapping>
 
 -----------------------------------------------
