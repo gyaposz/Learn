@@ -127,7 +127,7 @@ public String homepage(Model model) {
 És még sok mást is lehet, referenciát/doksit érdemes olvasni.
 
 -----------------------------------------------
-5. Handler visszatérési értékek
+6. Handler visszatérési értékek
 
 - String - logikai nevek a weboldalhoz
 - Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a viewt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni.
@@ -135,7 +135,7 @@ public String homepage(Model model) {
 - ModelAndView-val is vissza lehet térni. return new ModelAndView("homepage", model.asMap());
 
 -----------------------------------------------
-6. Forward és redirect
+7. Forward és redirect
 
 "redirect:files" - Redirectview a visszatérési érték ilyenkor. Ekkor a files nem egy logikai view, hanem egy path/URL.
 
@@ -149,7 +149,7 @@ return "redirect:/c/homepage" -> /c/homepage
 return "redirect:c/homepage" -> /h/g/c/homepage
 
 -----------------------------------------------
-7. Logikai view name feloldása (View resolution)
+8. Logikai view name feloldása (View resolution)
 
 Többfajta van, nem feltétlenül logikai nevekkel dolgoznak.
 Lehetnek a view nevek explicitek vagy implicitek.
@@ -159,13 +159,16 @@ Lehetnek a view nevek explicitek vagy implicitek.
 - ContentNegotiatingViewResolver - delegátor, ami más viewresolvereknek delegálja a munkát. Pl az URL alapján, hogy milyen extension-je van. Lehet akár header alapján is, pl: Accept="application/pdf"
 
 -----------------------------------------------
-8. View resolverek chainelése
+9. View resolverek chainelése
 
 A sorrendet explicit beállíthatjuk.
 Default chain esetén az lesz a nyerő resolver, amelyik először ad nem null értéket. A ContentNegotiatingViewResolver azonban a legjobban illeszkedőt választja és mindet kigenerálja. Ha mindegyik null-t ad vissza, akkor server exception-t dobunk. lehet order-t megadni, de nem kötelező. (Ha a leggyakoribbat adom meg elsőnek, nyerhetek performanciát.) Mondjuk egy 0-ás jspresolvert csinálunk, meg egy 1-es pdf-eset.
 
+https://kb.epam.com/display/EPMSZGD/Spring
+https://videoportal.epam.com/video/noPXeqoX 20 perc
+
 -----------------------------------------------
-9. Request processing
+10. Request processing
 
 Accepting request -> dispatcher servlet -> resolving view -> render view
 
@@ -189,7 +192,7 @@ Rendering view:
 - Renderelt response visszakerül a servlet container-hez, innen pedig a clienthez.
 
 -----------------------------------------------
-10. Best practices / EPAM standards
+11. Best practices / EPAM standards
 
 - Resource:
 	- Default-ból a WEB-INF-be pakolja a spring-es context.xml-t. Nem szoktuk, inkább a classpath-ra tesszük, valami separate package-be instead. tehát classpath:
@@ -202,7 +205,7 @@ Rendering view:
 - pom.xml-be ne tegyünk extra függőséget
 
 -----------------------------------------------
-11. N-tier web applications in Spring MVC
+12. N-tier web applications in Spring MVC
 
 Különböző rétegek különböző contextben.
 - Context hierarchy:
