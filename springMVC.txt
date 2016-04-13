@@ -198,8 +198,14 @@ Rendering view:
 	- @ModelAttribute-ot használjuk a model helyett.
 	- Request, response, session, model kerülése.
 	- És kerüljük a több handlert is egy controllerben.
-- Maradjunk Spring MVC-ben, amikor csak lehet. De igyekezzünk ne körbehackelni a servlet API-val.
+- Maradjunk Spring MVC-ben, amikor csak lehet. Igyekezzünk ne körbehackelni a servlet API-val.
 - pom.xml-be ne tegyünk extra függőséget
+- Vezess be rétegeket és a rétegek között transformáld az adatot: ha megváltozik az egyik nem kell mindent átírnom, csak a fontos adat rész látszik, stb.
+- Ígyekezzünk vertikális majd horizontális bontásban létrehozni az alkalmazást.
+- One page - one model szabály. Egy ModelAttribute legyen a Bean-ben, ne legyen több különböző név a model-ben.
+- One controller - one action rule.
+- Layout engine
+- URL hivatkozás: <c:url value='/xxx'> hozzácsapja root-context-et. (localhost/bookshop/xxx), nélküle (localhost/xxx)
 
 -----------------------------------------------
 11. N-tier web applications in Spring MVC
@@ -212,4 +218,59 @@ Különböző rétegek különböző contextben.
 			elzárni beaneket egymástól. Az a réteg, ami a DB-vel kapcsolatban, ne hívjon meg view-val kapcsolatos dolgokat. fordítva talán igen, de cirkuláris referencia elkerülése fontos.
 	- Újrafelhasználható layerek. Standardisation, maintainability, testability, easier enhancement, distributed development, layers can be modified independently.
 
-3/12 - 12:00
+-----------------------------------------------
+12. 3-tier web applications in Spring MVC
+
+Tipikus 3 réteg:
+	- Data Access/Repository layer (3rd party data access)
+	- Service layer (üzleti logika)
+	- View layer (presenting data to clients)
+
+Gyakori package rendezési elv:
+Először vertikálisan bontjuk (könyv, bolt, homepage),
+majd horizontálisan (domain, repository, service, view)
+A vertikumok gyakran külön modulokban vannak.
+
+-----------------------------------------------
+13. Context hierarchia
+
+web.xml-ben eddig mvc-context.xml, mint contextConfigLocation, amit a DispatcherServlet input-param-ként kap.
+
+ContextLoaderListener lehetővé teszi, hogy configuráljunk egy applicationContextet is.
+
+<listener>
+  <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+Amikor az alkalmazás deployolódik, akkor a listener először legyártja az application context-et, amit az mvc-context látni fog.
+
+<context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>classpath:spring/application-context.xml</param-value>
+</context-param>
+
+Így a view-kkal kapcsolatos bean-ek az mvc-context-be, minden más pedig az application-context-be kerül.
+
+-----------------------------------------------
+14. MVC context a CSS-hez
+
+<mvc:resources location="WEB-INF/assets" mapping="/assets/**"/> - WEB-INF védett mappa, senki nem látná a CSS-t különben. Mintha egy controller lenne.
+
+-----------------------------------------------
+15. Data-binding - request-param
+
+Request parameter-eket spring-ben @RequestParam annotációval elérhetőek, a konverzió automatikus.
+
+Handler hozzáfér direktben a request-hez, de minek? Helyette:
+
+public String showBooks(@RequestParam("bookId") Long bookId) { ... }
+
+-----------------------------------------------
+16. Data-binding - form-object
+
+Több paramétert egy objektumba tuszkolunk. Típuskonverzió itt is automatikus. Nem kell semmilyen annotáció, mivel nem ismeri fel az objektumot a handler argumentumában, biztos, hogy form-objectről van szó.
+
+public String showbooks(ShowBookRequest showBookrequest) {...}
+
+a mappelés név alapján fog történni.
+
