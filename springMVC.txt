@@ -293,3 +293,24 @@ public String showBooks() {
 }
 
 Ilyenkor a "/showBook.html?bookId=1" működik, mert miután kiderül, hogy ez a controller kezeli az URL-t, először lefut a ModelAttribute annotáció által mutatott metód a handler metód előtt.
+
+-----------------------------------------------
+18. Data-binding - Best practices
+
+- Avoid request/response manual interaction
+- Avoid RequestMapping (list can go significantly)
+- try to use form-object to properly encapsulate request parameters
+- try to keep handler mappings in one place
+- JSP (no url building, no calculation, no configuration access)
+- Form-object nevére valamilyen convention-t követni érdemes (pl.: *Request)
+- Model nevére valamilyen convention-t követni érdemes (pl.: *Model)
+
+-----------------------------------------------
+19. Data-binding - forms
+
+Post ugyanúgy mehet, mint a get. Tehát RequestMapping vagy form-object.
+Csakhogy itt a ModelAttribute metódusának paramétere nem form-object lesz, hanem tulajdonképpen ModelAttribute.
+Ez azért fontos, hogy a submit gomb lenyomása után megőrződjön a submitált kontent és továbbra is kint legyen a form-ban. A model-ben tehát benne marad a kontent a korábbi requestmapping-hez képest.
+Most két modelünk van tehát. Az egyik befelé fogad adatot (szépészetileg fontos lehet, hogy az előző keresés értékét megőrizzük) a másik model kifele tol.
+
+Spring MVC 6/12 0:00
