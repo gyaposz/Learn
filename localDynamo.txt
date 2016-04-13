@@ -1,0 +1,39 @@
+var params = {
+    TableName: 'SLP_1D_PAGE',
+    // IndexName: 'index_name', // optional (if querying an index)
+
+    // Expression to filter on indexed attributes
+    KeyConditionExpression: '#hashkey = :hk_val',
+    ExpressionAttributeNames: {
+       '#hashkey': 'page_id'
+    },
+    ExpressionAttributeValues: {
+       ':hk_val': '1:en_US:179892'
+    },
+
+    /*
+    // optional - list of attributes to return (default is to return all)
+    ProjectionExpression: 'EXPRESSION STRING',
+
+    // optional - filter expression to apply on results of KeyConditionExpression
+    FilterExpression: 'EXPRESSION STRING',
+    */
+
+    ScanIndexForward: true, // optional (true | false) defines direction of Query in the index
+    Limit: 1, // optional (limit the number of items to evaluate)
+    ConsistentRead: false, // optional (true | false)
+    ReturnConsumedCapacity: 'NONE', // optional (NONE | TOTAL | INDEXES)
+
+    /*
+    // optional (for pagination, returned by prior calls as LastEvaluatedKey)
+    ExclusiveStartKey: {
+        attribute_name: attribute_value,
+        // attribute_value (string | number | boolean | null | Uint8Array | dynamodb.Set | Array | Object)
+        // anotherKey: ...
+    },
+    */
+};
+dynamodb.query(params, function(err, data) {
+    if (err) print(err); // an error occurred
+    else print(data); // successful response
+});
