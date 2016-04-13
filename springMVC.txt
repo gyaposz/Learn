@@ -222,7 +222,7 @@ Különböző rétegek különböző contextben.
 	- Újrafelhasználható layerek. Standardisation, maintainability, testability, easier enhancement, distributed development, layers can be modified independently.
 
 -----------------------------------------------
-12. 3-tier web applications in Spring MVC
+13. 3-tier web applications in Spring MVC
 
 Tipikus 3 réteg:
 	- Data Access/Repository layer (3rd party data access)
@@ -235,7 +235,7 @@ majd horizontálisan (domain, repository, service, view)
 A vertikumok gyakran külön modulokban vannak.
 
 -----------------------------------------------
-13. Context hierarchia
+14. Context hierarchia
 
 web.xml-ben eddig mvc-context.xml, mint contextConfigLocation, amit a DispatcherServlet input-param-ként kap.
 
@@ -255,12 +255,12 @@ Amikor az alkalmazás deployolódik, akkor a listener először legyártja az ap
 Így a view-kkal kapcsolatos bean-ek az mvc-context-be, minden más pedig az application-context-be kerül.
 
 -----------------------------------------------
-14. MVC context a CSS-hez
+15. MVC context a CSS-hez
 
 <mvc:resources location="WEB-INF/assets" mapping="/assets/**"/> - WEB-INF védett mappa, senki nem látná a CSS-t különben. Mintha egy controller lenne.
 
 -----------------------------------------------
-15. Data-binding - request-param
+16. Data-binding - request-param
 
 Request parameter-eket spring-ben @RequestParam annotációval elérhetőek, a konverzió automatikus.
 
@@ -269,7 +269,7 @@ Handler hozzáfér direktben a request-hez, de minek? Helyette:
 public String showBooks(@RequestParam("bookId") Long bookId) { ... }
 
 -----------------------------------------------
-16. Data-binding - form-object
+17. Data-binding - form-object
 
 Több paramétert egy objektumba tuszkolunk. Típuskonverzió itt is automatikus. Nem kell semmilyen annotáció, mivel nem ismeri fel az objektumot a handler argumentumában, biztos, hogy form-objectről van szó.
 
