@@ -274,3 +274,19 @@ public String showbooks(ShowBookRequest showBookrequest) {...}
 
 a mappelés név alapján fog történni.
 
+form-object-nek ne legyen paraméterezett konstruktora, mert nem tudja példányosítani.
+
+Pl.:
+
+@ModelAttribute("bookDetailsModel")
+public BookDetailsModel createBookDetailsModel(ShowBookRequest showBookRequest) {
+  Book book = findBook(sowBookRequest.getBookId());
+  return initBookDetailsModel(book);
+}
+
+@RequestMapping("/showBook.html")
+public String showBooks() {
+  return "book_details";
+}
+
+Ilyenkor a "/showBook.html?bookId=1" működik, mert miután kiderül, hogy ez a controller kezeli az URL-t, először lefut a ModelAttribute annotáció által mutatott metód a handler metód előtt.
