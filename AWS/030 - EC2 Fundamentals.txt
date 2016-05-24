@@ -4,6 +4,6 @@ However please note that if you are using DEV-PAY you cannot use UserData.
 
 Each AMI lives in a separate region. If we want to have this available in different regions we have to copy image to different regions.
 
-Instance-store backed instance of EC2 - there is no EBS behind it, after stopping the instance it will lose all data created during the execution.
+Instance-store backed instance of EC2 - there is no EBS behind it, after stopping the instance it will lose all data created during the execution. (ephemeral or temporary storage stores content only with reboots)
            EBS backed instance of EC2 - however maintain the data even after restart.
 		   
