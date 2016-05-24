@@ -201,8 +201,14 @@ Rendering view:
 	- @ModelAttribute-ot használjuk a model helyett.
 	- Request, response, session, model kerülése.
 	- És kerüljük a több handlert is egy controllerben.
-- Maradjunk Spring MVC-ben, amikor csak lehet. De igyekezzünk ne körbehackelni a servlet API-val.
+- Maradjunk Spring MVC-ben, amikor csak lehet. Igyekezzünk ne körbehackelni a servlet API-val.
 - pom.xml-be ne tegyünk extra függőséget
+- Vezess be rétegeket és a rétegek között transformáld az adatot: ha megváltozik az egyik nem kell mindent átírnom, csak a fontos adat rész látszik, stb.
+- Ígyekezzünk vertikális majd horizontális bontásban létrehozni az alkalmazást.
+- One page - one model szabály. Egy ModelAttribute legyen a Bean-ben, ne legyen több különböző név a model-ben.
+- One controller - one action rule.
+- Layout engine
+- URL hivatkozás: <c:url value='/xxx'> hozzácsapja root-context-et. (localhost/bookshop/xxx), nélküle (localhost/xxx)
 
 -----------------------------------------------
 12. N-tier web applications in Spring MVC
@@ -215,4 +221,96 @@ Különböző rétegek különböző contextben.
 			elzárni beaneket egymástól. Az a réteg, ami a DB-vel kapcsolatban, ne hívjon meg view-val kapcsolatos dolgokat. fordítva talán igen, de cirkuláris referencia elkerülése fontos.
 	- Újrafelhasználható layerek. Standardisation, maintainability, testability, easier enhancement, distributed development, layers can be modified independently.
 
-3/12 - 12:00
+-----------------------------------------------
+13. 3-tier web applications in Spring MVC
+
+Tipikus 3 réteg:
+	- Data Access/Repository layer (3rd party data access)
+	- Service layer (üzleti logika)
+	- View layer (presenting data to clients)
+
+Gyakori package rendezési elv:
+Először vertikálisan bontjuk (könyv, bolt, homepage),
+majd horizontálisan (domain, repository, service, view)
+A vertikumok gyakran külön modulokban vannak.
+
+-----------------------------------------------
+14. Context hierarchia
+
+web.xml-ben eddig mvc-context.xml, mint contextConfigLocation, amit a DispatcherServlet input-param-ként kap.
+
+ContextLoaderListener lehetővé teszi, hogy configuráljunk egy applicationContextet is.
+
+<listener>
+  <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+Amikor az alkalmazás deployolódik, akkor a listener először legyártja az application context-et, amit az mvc-context látni fog.
+
+<context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>classpath:spring/application-context.xml</param-value>
+</context-param>
+
+Így a view-kkal kapcsolatos bean-ek az mvc-context-be, minden más pedig az application-context-be kerül.
+
+-----------------------------------------------
+15. MVC context a CSS-hez
+
+<mvc:resources location="WEB-INF/assets" mapping="/assets/**"/> - WEB-INF védett mappa, senki nem látná a CSS-t különben. Mintha egy controller lenne.
+
+-----------------------------------------------
+16. Data-binding - request-param
+
+Request parameter-eket spring-ben @RequestParam annotációval elérhetőek, a konverzió automatikus.
+
+Handler hozzáfér direktben a request-hez, de minek? Helyette:
+
+public String showBooks(@RequestParam("bookId") Long bookId) { ... }
+
+-----------------------------------------------
+17. Data-binding - form-object
+
+Több paramétert egy objektumba tuszkolunk. Típuskonverzió itt is automatikus. Nem kell semmilyen annotáció, mivel nem ismeri fel az objektumot a handler argumentumában, biztos, hogy form-objectről van szó.
+
+public String showbooks(ShowBookRequest showBookrequest) {...}
+
+a mappelés név alapján fog történni.
+
+form-object-nek ne legyen paraméterezett konstruktora, mert nem tudja példányosítani.
+
+Pl.:
+
+@ModelAttribute("bookDetailsModel")
+public BookDetailsModel createBookDetailsModel(ShowBookRequest showBookRequest) {
+  Book book = findBook(sowBookRequest.getBookId());
+  return initBookDetailsModel(book);
+}
+
+@RequestMapping("/showBook.html")
+public String showBooks() {
+  return "book_details";
+}
+
+Ilyenkor a "/showBook.html?bookId=1" működik, mert miután kiderül, hogy ez a controller kezeli az URL-t, először lefut a ModelAttribute annotáció által mutatott metód a handler metód előtt.
+
+-----------------------------------------------
+18. Data-binding - Best practices
+
+- Avoid request/response manual interaction
+- Avoid RequestMapping (list can go significantly)
+- try to use form-object to properly encapsulate request parameters
+- try to keep handler mappings in one place
+- JSP (no url building, no calculation, no configuration access)
+- Form-object nevére valamilyen convention-t követni érdemes (pl.: *Request)
+- Model nevére valamilyen convention-t követni érdemes (pl.: *Model)
+
+-----------------------------------------------
+19. Data-binding - forms
+
+Post ugyanúgy mehet, mint a get. Tehát RequestMapping vagy form-object.
+Csakhogy itt a ModelAttribute metódusának paramétere nem form-object lesz, hanem tulajdonképpen ModelAttribute.
+Ez azért fontos, hogy a submit gomb lenyomása után megőrződjön a submitált kontent és továbbra is kint legyen a form-ban. A model-ben tehát benne marad a kontent a korábbi requestmapping-hez képest.
+Most két modelünk van tehát. Az egyik befelé fogad adatot (szépészetileg fontos lehet, hogy az előző keresés értékét megőrizzük) a másik model kifele tol.
+
+Spring MVC 6/12 0:00
