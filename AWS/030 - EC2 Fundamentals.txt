@@ -1,0 +1,9 @@
+We can create AMI on the fly from a running EC2 Instance.
+We can also do DEV-PAY. We can sell AMIs that we have built with our custom-build product adding the cost per hour that has to be paid by the customer.
+However please note that if you are using DEV-PAY you cannot use UserData.
+
+Each AMI lives in a separate region. If we want to have this available in different regions we have to copy image to different regions.
+
+Instance-store backed instance of EC2 - there is no EBS behind it, after stopping the instance it will lose all data created during the execution.
+           EBS backed instance of EC2 - however maintain the data even after restart.
+		   
