@@ -1,0 +1,23 @@
+EC2 is acronim for Elastic Cloud Compute. They are Virtual Servers in the Cloud.
+EC2 purchase option:
+In Amazon we only pay what we use, but we can configure what we use:
+	- Spot Instance:
+		- Bid on unused EC2 instances
+		- But cannot be used for disruption intolerant services
+	
+	- Reserved Instance:
+		- Pay down EC2 price upfront and guarantee compute time in an AZ
+		- 1 year, 3 year upfront
+		- Can save time if you have a compute intense service running 24 hours a day
+		- If AZ is going down then you will have priority over on-demand instances.
+		
+	- On-demand Instance:
+		- Regular hourly price based on the size of the instances (micro is about a penny/minute)
+	- Free Tier Instance
+		- 750 hours of compute time.
+	
+Amazon EC2-Classic limits by default:
+	- 5 Elastic IP Addresses
+	- 20 Instances per account
+	
+Amazon Instance Types are Micro, Small, Medium, Large. differences are memory, compute power, block storage, network performance and EBS optimization
