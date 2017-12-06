@@ -48,6 +48,8 @@ Ez a bean arra való, hogy classpath resource-hoz navigáljon minket. Ez fogja f
 Ennek a beannek a RequestMapping által visszaadott logikai név egy fájlnévként lesz értelmezve. Elõtte, utána konkatenálunk prefix-szel és suffix-szel.
 Ez csak JSP-t tud feloldani, de pl az InternalViewResolver már servletet is. Ez utóbbi mondat szerintem hülyeség, nem találtam InternalViewResolvert.
 
+Ha nincs view resolver (amik chain-elhetőek), akkor elszáll az alkalmazás.
+
 <servlet>
 	<servlet-name>bookshop</servlet-name>
 	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -119,7 +121,7 @@ Viszont lehet olyat, hogy: public String page(@RequestParam("paramName") String 
 Ekkor a SpringMVC kiveszi nekünk a paramName-et a requestbõl és beteszi paramba.
 
 - Model
-Ez a model, amit látni fog a JSP. Mintha be lenne kopizva a request attributumok között. A model mindig egy map.
+Ez a model, amit látni fog a JSP. A tartalma úgy jelenik meg, mintha be lenne kopizva a request attributumok közé. A model mindig egy map.
 public String homepage(Model model) {
 	model.addAttribute("currentDate", new Date());
 }
@@ -129,8 +131,8 @@ public String homepage(Model model) {
 -----------------------------------------------
 6. Handler visszatérési értékek
 
-- String - logikai nevek a weboldalhoz
-- Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a viewt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni.
+- String - logikai view nevek a weboldalhoz
+- Model-lel is vissza lehet térni. Convention over configuration. Nem kell visszaadnunk a viewt, azt hiszem, hogy a RequestMapping-bõl fogja kitalálni, hogy mi lesz a megjelenítendõ view. RequestToViewNameTranslator fogja ezt a kitalálást elvégezni. Tehát a request alapján történik: http://localhost/homepage.html -> homepage
 - View objektummal is visszatérhetünk.
 - ModelAndView-val is vissza lehet térni. return new ModelAndView("homepage", model.asMap());
 
@@ -163,9 +165,6 @@ Lehetnek a view nevek explicitek vagy implicitek.
 
 A sorrendet explicit beállíthatjuk.
 Default chain esetén az lesz a nyerő resolver, amelyik először ad nem null értéket. A ContentNegotiatingViewResolver azonban a legjobban illeszkedőt választja és mindet kigenerálja. Ha mindegyik null-t ad vissza, akkor server exception-t dobunk. lehet order-t megadni, de nem kötelező. (Ha a leggyakoribbat adom meg elsőnek, nyerhetek performanciát.) Mondjuk egy 0-ás jspresolvert csinálunk, meg egy 1-es pdf-eset.
-
-https://kb.epam.com/display/EPMSZGD/Spring
-https://videoportal.epam.com/video/noPXeqoX 20 perc
 
 -----------------------------------------------
 10. Request processing
