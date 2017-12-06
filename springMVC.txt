@@ -141,8 +141,8 @@ public String homepage(Model model) {
 
 "redirect:files" - Redirectview a visszatérési érték ilyenkor. Ekkor a files nem egy logikai view, hanem egy path/URL.
 
-"forward:homepage.do" - Forward esetén is URL. pl:
-
+"forward:homepage.do" - Forward esetén is URL. RequestDispatcher.forward()
+pl:
 RequestMapping(value="/h/g/x.do")
 ...
 return "redirect:homepage" -> /h/g/homepage
@@ -154,7 +154,7 @@ return "redirect:c/homepage" -> /h/g/c/homepage
 8. Logikai view name feloldása (View resolution)
 
 Többfajta van, nem feltétlenül logikai nevekkel dolgoznak.
-Lehetnek a view nevek explicitek vagy implicitek.
+Lehetnek a view nevek explicitek (return value) vagy implicitek (convention over configuration).
 
 - InternalResourceviewResolver - Servlet, JSP és leszármazottaik, mint JstlView (InternalResourceView-ek összefoglaló néven)
 - XmlViewResolver - xml configuration file for mapping between jsp and view name
@@ -164,7 +164,9 @@ Lehetnek a view nevek explicitek vagy implicitek.
 9. View resolverek chainelése
 
 A sorrendet explicit beállíthatjuk.
-Default chain esetén az lesz a nyerő resolver, amelyik először ad nem null értéket. A ContentNegotiatingViewResolver azonban a legjobban illeszkedőt választja és mindet kigenerálja. Ha mindegyik null-t ad vissza, akkor server exception-t dobunk. lehet order-t megadni, de nem kötelező. (Ha a leggyakoribbat adom meg elsőnek, nyerhetek performanciát.) Mondjuk egy 0-ás jspresolvert csinálunk, meg egy 1-es pdf-eset.
+Default chain esetén az lesz a nyerő resolver, amelyik először ad nem null értéket.
+A ContentNegotiatingViewResolver azonban a legjobban illeszkedőt választja és mindet kigenerálja.
+Ha mindegyik null-t ad vissza, akkor server exception-t dobunk. lehet order-t megadni, de nem kötelező. (Ha a leggyakoribbat adom meg elsőnek, nyerhetek performanciát.) Mondjuk egy 0-ás jspresolvert csinálunk, meg egy 1-es pdf-eset.
 
 -----------------------------------------------
 10. Request processing
@@ -184,7 +186,7 @@ Dispatcher servlet:
 Resolving view:
 - Vagy elszállunk valami exception-nel a handler lefutása után, vagy
 - visszatérünk egy értékkel, amit a DispatcherSerlvet a view resolver chain-nek ad át.
-- A view resolverek megtalálják a megfelelő renderelni kívánt view.t
+- A view resolverek megtalálják a megfelelő renderelni kívánt view-t.
 
 Rendering view:
 - View resolver eredménye a response tartalma
