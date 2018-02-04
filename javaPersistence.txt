@@ -1,0 +1,130 @@
+Spring Data
+
+- Improved support for relational/non-relational database technologies
+- Makes it easy to use new data access technologies:
+	- non-sql databases
+	- map-reduce frameworks
+	- Cloud based data services
+- Spring data JPA, Gemfire, Redis, MongoDb, Solr, REST, NEO4J, HADOOP, JDBC Extensions, Cassandra, etc.
+
+Benefits:
+- Interface-based programming model
+- Start simple, get more sophisticated
+- Declarative query execution
+- Custom implementation
+- Spring DI integration
+- CDI integration (Java EE 1.6)
+
+Java Code:
+import org.springframework.data.repository.CrudRepository;
+public interface EntityRepository extends CrudRepository<Entity, Long> {
+    List<Entity> findByLastName(String lastName);
+}
+
+More Benefits:
+- Sophisticated support to build repostories based on Spring and JPA
+- Support for Querydsl predicates and thus type-safe JPA queries
+- Transparent auditing of domain class
+- Pagination support, dynamic query execution, ability to integrate custom data access code
+- Validation of @Query annotated queries at bootstrap
+- Support for XML based entity mapping
+- JavaConfig based repository configuration by introducing @EnableJpaRepositories
+	
+-----------------------------------------------
+Integration Testing
+
+- Testing the component outside of the application server
+- JDBC, JPA, ... can be run in Java SE environment (JUnit, Spring)
+- OR use embedded EJB container
+- Run test in a database:
+	- In memory database
+	- Test database
+- Setup and tear down to create + populate and drop test database
+- DbUnit:
+	- puts your database into a known state between test runs
+	- You can assert your database
+	
+E.g.:
+"jdbc:h2:mem:test;Mode=MySQL" h2 in memory database MySQL módban.
+@ContextConfiguration(Configuration context)
+@RunWith(SpringJUnit4ClassRunner.class)
+
+-----------------------------------------------
+Database Versioning
+
+Store data:
+- Database structure
+- Initial data
+- Business data
+- Other (stored procedures, ...)
+
+The database version is stored in the database itself
+The database version is verified by the application on start-up
+Update scripts are written in parallel to development
+
+Best practices
+
+- Write environment-independent scripts
+- Use different schemas if multiple teams are working on a database
+- Never change upgrade scripts once they have been checked in
+- Automate the upgrade process
+- Validate upgrade scripts on your CI
+- Backup the database before upgrade, if possible
+- Record a history of applied upgrade scripts
+
+Liquibase - source control for database
+SpringLiquibase (changelog table stores the changes)
+
+- Code branching, merging
+- Multiple developers
+- Multiple database types
+- Multiple file formats: XML, YAML, JSON, SQL
+- DB change doc generation
+- DB diff generation
+- Can be added to build process or embedded into your application
+- Offline database support
+
+- Commands:
+	- Update
+	- Rollback
+	- Diff
+	- SQL Output
+	- DBDoc
+- Running:
+	- On Demand: e.g.: command line Maven
+	- Automated: e.g.: Spring listener
+	- Java API
+	
+-----------------------------------------------
+Achitecture
+
+DAO (Data Access Layer-ben):
+- connects the service with the database
+- goal is to abstract and encapsulate all access to the data and provide an interface
+
+- Entity is for DAO layer. Service layer should not work with entities. Client layer should not either.
+- Service layer has a transformation layer that transforms entities to a DTO (data transfer object), client layer may also have such transformation layer and DTO.
+
+High level Enterprise Application concept
+Enterprise Application:
+- Information system
+- Involves persistent data
+- People access data concurrently
+- Transactions
+- User interface
+- Batch processing
+- Integration of other applications
+- "large system"
+
+Layering benefits:
+- Coherent layers
+- Substitute layers
+- Minimized dependencies
+- Can be standardized
+
+Three principal layers:
+- Presentation layer
+- Business logic layer:
+	- Service layer
+	- Domain model
+- Data Source layer
