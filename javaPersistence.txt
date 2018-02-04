@@ -1,3 +1,4 @@
+-----------------------------------------------
 Spring Data
 
 - Improved support for relational/non-relational database technologies
@@ -21,6 +22,11 @@ public interface EntityRepository extends CrudRepository<Entity, Long> {
     List<Entity> findByLastName(String lastName);
 }
 
+Javaconfig needs only the annotation described below.
+@EnableJpaRepositories("com.xyz.repository")
+
+By default EntityRepository will have a lot of cool methods but we can add our own methods as well (see findByLastName)
+
 More Benefits:
 - Sophisticated support to build repostories based on Spring and JPA
 - Support for Querydsl predicates and thus type-safe JPA queries
@@ -29,7 +35,53 @@ More Benefits:
 - Validation of @Query annotated queries at bootstrap
 - Support for XML based entity mapping
 - JavaConfig based repository configuration by introducing @EnableJpaRepositories
-	
+
+-----------------------------------------------
+Other - JDO
+
+- Another persistence specification
+- Standard since 2001 (JDO1)
+- Not only RDBMS supported
+- 'JPA is a subset of what is available in JDO'
+- Disadvantage: not so popular as JPA
+
+-----------------------------------------------
+Other - iBatis frameworks
+
+- Data mapping framework
+- Not a standard
+- Use iBatis if:
+	- You need complete control of the SQL or the SQL queries need to be fine-tuned.
+	- Your environment is driven by relational data model.
+	- You have to work with existing and complex schemas.
+
+-----------------------------------------------
+Other - Custom ORMs
+
+- Non-standard API, cannot swap to alternative implementation
+- May give extra features (e.g.: SQL tuning)
+- Example:
+	- Hibernate own API
+	- EclipseLink own API
+	- iBatis
+	- Own API
+
+-----------------------------------------------
+Testing
+
+- Unit test by DEV, automated, testing of persistence involved
+- Integration test by DEV, automated, testing of persistence involved
+- Functional test by QA, automated, testing of persistence not involved
+- Acceptance test by Customer, non-automated, testing of persistence not involved
+- Load test by DEV, automated, testing of persistence involved
+
+-----------------------------------------------
+Unit testing
+
+- Testing of a single class (or a collection of classes)
+- Entity classes could be tested separated
+- Components (DAOs) could be tested with mocked objects (EntityManager, JDBC-related classes)
+
 -----------------------------------------------
 Integration Testing
 
