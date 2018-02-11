@@ -1,6 +1,550 @@
+Problems:
+- How to connect to the database
+- Database table <-> Java domain model
+
+Object-relation mapping (ORM)
+- Object <-> tables
+- Convert JDBC result set to something OO
+	- map fields to columns
+	- relationships
+	- inheritance
+  
+-----------------------------------------------
+History 
+
+- JDBC since Java 1.1 (1997): API to access database
+- EJB 1.0, 1.1 Entity beans (1998, 1999):
+	- Part of EJB (works only in EE container)
+	- Too complex
+- EJB 2.0, 2.1 Entity beans (2001, 2003):
+	- EJB QL
+	- Still too complex
+- EJB 3.0, 3.1, 3.2 JPA Entities (2006, 2009, 2013)
+	- Annotations + POJOs
+
+Other, non standar solutions
+- Hibernate
+- TopLink
+- iBatis SQL Maps
+
+Java Data Objects (JDO)
+- another standard ORMs
+- But not part of the enterprise platform
+-----------------------------------------------
+SQL...
+DDL
+DML
+views, stored procedures, triggers, indexes, etc.,
+execution plan
+explain
+call or execute SP
+-----------------------------------------------
+Transactions
+
+Why to use transactions:
+- unit of work
+- increase performance
+- distributed transactions
+
+Transactional database:
+- Atomicity
+- Consistency
+- Isolation
+- Durability
+
+Control:
+- SET TRANSACTION
+- COMMIT
+- ROLLBACK
+- SAVEPOINT
+
+Isolation
+- How transaction integrity is visible to other users and systems
+
+Isolation levels:
+- TRANSACTION_READ_UNCOMMITTED
+- TRANSACTION_READ_COMMITTED
+- TRANSACTION_REPEATABLE_READ
+- TRANSACTION_SERIALIZABLE
+
+Isolation levels and anomalies
+- Read uncommitted - dirty read, non-repeatable read, phantom read
+- Read committed - non-repeatable read, phantom read
+- Repeatable read - phantom read
+- Serializable - 
+
+-----------------------------------------------
+JDBC
+
+Api to connect to a data source (database)
+Send queries/updates, retrieve result
+
+- DriverManager.getConnection(URL of DB) - connection
+- connection.createStatement() - Statement
+- Statement.executeQuery("SQL query") - ResultSet
+- ResultSet.next()
+- ResultSet.getInt, getString, getFloat
+- connection, statment, resultSet close()
+
+Each DB Manager requires its own JDBC Driver.
+-----------------------------------------------
+Component of JBDC
+
+- JDBC Driver Manager
+	- Manage list of drivers
+	- matches URL-s to the proper drivers
+- JDBC Driver
+	- Handles the communication with the database server
+	- Vendor specific
+- javax.sql.Connection
+	- Contacting database
+- javax.sql.Statement
+	- Submit SQL statements to the database
+- javax.sql.ResultSet
+	- Hold data retrieved from the database
+- javax.sql.SQLException
+	- Any error
+	- getErrorCode, getMessage
+	- Checked exception
+	- ErrorCode and Message is vendor specific
+	- Resources have to be closed manually in finally upon SQLException
+-----------------------------------------------
+java.sql.Connection interface
+
+- A connection (session) with a specific database.
+- How to create a connection:
+	- Register drivers (in the past, now it is automatic)
+	- create database URL
+	- Create connection object
+- Resources have to be closed.
+- and transaction handling:
+	- turn off autocommit:
+		- conn.setAutoCommit(false)
+	- Commit & Rollback:
+		- conn.commit()
+		- conn.rollback()
+	- Savepoint - additional transactional control:
+		- conn.setSavepoint(String savepointName)
+		- conn.releaseSavepoint(String savepointName)
+		- conn.rollback(String savepointName)
+		- conn.commit()
+----------------------------------------------
+Statements
+
+Statement
+- General-purpose access to the database
+- executeUpdate("", Statement.RETURN_GENERATED_KEYS)
+
+Prepared statement:
+- Database level concept
+- Advantages:
+	- Execution plan cached - better performance
+	- Good way against SQL injection
+- connection.prepareStatement("?")
+- preparedStatement.setString(1, "")
+
+CallableStatement:
+- Execute a call to a database stored procedure
+- API is standard but the code of the stored procedure is not
+-----------------------------------------------
+ResultSet
+
+- getXXX - in case of primitives if they were <NULL> in DB, it will 0. Try to avoid it.
+- setNull
+- wasNull
+- statement.getGeneratedKeys() - ResultSet
+-----------------------------------------------
+Batch processing
+
+- Group related SQL statements into a batch and submit them with one call to the database
+- Reduce the amount of communication overhead, thereby improving performance.
+- No JDBC driver support
+- Usage:
+	- conn.setAutocommit(false)
+	- conn.createStatement() // Statement, PreparedStatement, CallableStatement
+	- stmt.addBatch()
+	- stmt.executeBatch()
+	- stmt.clearBatch()
+	- conn.commit()
+-----------------------------------------------
+DataSource
+
+- Spring's own implementation is DriverManagerDataSource
+- DriverManagerDataSource(URL, UserName, PassWord)
+-----------------------------------------------
+Spring DAO Support
+
+- Why to use Spring templates?
+	- Consistent way to work with data access technologies (JDBC, Hibernate, JDO, ...)
+	- Switching between technologies
+- How to achieve this?
+	- Consistent exception hierarchy
+		- Translating of technology specific exceptions (SQLException, HibernateException, etc.)
+		- Only runtime exceptions
+		- E.g.: DataIntegrityViolationException kb.
+- Spring DAO Support:
+	- Spring JDBC templates
+	- Spring ORM
+- Benefits
+	- Easier testing (Spring IOC)
+	- Common data access exceptions
+	- General resource management
+	- Integrated transaction management (@Transactional)
+-----------------------------------------------
+DataSource
+
+- javax.sql.DataSource
+- Allows to the container/framework to hide connection pooling and transaction management
+- getConnection()
+- types:
+	- Basic standard connection object
+	- Pooled connection participates in connection pooling
+	- Distributed transaction management
+-----------------------------------------------
+Spring JDBC templates
+
+- JDBC abstraction for a simplified database access (API)
+- Why we use Spring JDBC template?
+	- You still have to:
+		- Define connection parameters
+		- Specify SQL statement
+		- Declare parameters and provide parameter values
+		- Prepare and execute the statement
+		- Do the work for each iteration step
+	- But JDBC template takes over:
+		- Open the connection
+		- Set up the loop to iterate through the results (if any)
+		- Process any exception
+		- Handle transactions
+		- Close the connection, statement, resultSet
+
+How to use it?
+	- It uses DataSource
+	- jdbcTemplate.queryForObject("SQL", returnType)
+	- jdbcTemplate.queryForObject("PrepStmt", args[], returnType)
+	- jdbcTemplate.queryForObject("PrepStmt", returnType, arg)
+- Populating domain object:
+	- jdbcTemplate.queryForObject("SQL", RowMapper interface)
+	new RowMapper<T> {
+		T mapRow(ResultSet rs, int rowNum) {
+			...
+		}
+	- jdbcTemplate.query()
+- Insert/Update/Delete
+	- jdbcTemplate.update()
+- Stored Procedure
+	- jdbcTemplate.update()
+- DDL
+	- jdbcTemplate.execute()
+- NamedParameterJdbcTemplate
+	- ":firstName" instead of "?"
+		- SqlParameterSource namedParameters = MapSqlPArameterSource("firstName", firstName)
+		- Map<String, String> namedParameters
+		- BeanPropertySqlParameterSource(T t) namedParameters
+		  namedParameterJdbcTemplate.queryForObject(sql, retType, namedParameters)
+- ParameterizedBeanPropertyRowMapper<T>
+- Autogenerated keys
+	- GenerateKeyHolder
+	- jdbcTemplate.update("", keyHolder);
+- Batch processing
+	- jdbcTemplate.batchUpdate()
+	- SqlParameterSource[] if using named parameters
+
+Simplification tools	
+- SimpleJdbcInsert
+	- SimpleJdbcInsert.withTableName();
+	- SimpleJdbcInsert.usingGeneratedKeyColumns()
+	- parameters.put or SqlParameterSource
+	- SimpleJdbcInsert.execute(parameters)
+	- SimpleJdbcInsert.exeucteAndReturnKey(parameters)
+- SimpleJdbcCall
+- MappingSqlQuery<T> {
+		constructor with SQL
+		mapRow()
+	}
+- SqlUpdate class	
+	- constructor with SQL
+	- update()
+
+SQLException translator
+	- CustomSQLErrorCodesTranslator extends SQLErrorCodeSQLExceptionTranslator {
+	    customTranslater()
+	}
+	- jdbcTemplate.setExceptionTranslator(new CustomSQLErrorCodesTranslator()) Please springify this! :)
+-----------------------------------------------
+Transactions again
+- Use DataSourceTransactionManager(extends PlatformTransactionManager)
+- Programmatic transaction management:
+	- commit
+	- rollback
+	- getTransaction()
+- Declarative transaction handling:
+	- @Transactional annotation
+	- Possible Propagation values:
+		- Required
+		- Supports
+		- Mandatory
+		- Requires_new
+		- Not_supported
+		- Never
+		- Nested (transaction within transaction)
+-----------------------------------------------
+Spring ORM
+
+- Annotations (@Repository)
+- Working with different persistent technologies
+-----------------------------------------------
+JPA
+
+Entity
+- Entity: thing that have attributes and relationships
+- Entity expectation: attributes and relationships persisted in a relational database
+- Entity features:
+	- Persistent
+	- (persistent) Identity
+	- Transactionality
+	- Granularity
+
+JPA
+
+- Java Persistence API. It is just a standard
+- JPA since EJB 3.0
+- Previously they were called entity beans.
+- Works on simple JVM as well
+- Implementations:
+	- EclipseLink (reference implementation)
+	- Hibernate ORM
+- Initial goals:
+	- Easy to learn
+	- Simple to use
+
+JPA Elements
+- API
+- Queries (JPQL, criteria)
+- O-R metadata
+
+-----------------------------------------------
+JPA metadata
+
+- Metadata
+	- XML
+	- @Annotations
+	- Configuration by Exception
+	- It is not stored in the database
+
+- Annotations
+	- @Entity on class
+	- @Id on field, must be serializable
+	- @Table(name, schema) on class
+	- @Basic (optional, only for documentation purposes) on field
+		- fetch=FetchType.LAZY
+		- fetch=FetchType.EAGER
+	- Simple types are mapped automatically (java.util.Date, java.util.Calendar as well!)
+	- @Column (name) on field
+	- @Lob on field
+	- @Enumeration(EnumType.STRING) on field
+	- @Temporal(TemporalType.DATE, TIME, TIMESTAMP) on field
+	- @Transient on field
+	
+- Primary key
+	- AutoIncrement in MySQL
+	  @GeneratedValue(strategy=GenerationType.AUTO)
+	- Oracle
+	  @GeneratedValue(generator="Emp_Gen")
+	  @SequenceGenerator(name="Emp_Gen", sequenceName="Emp_Seq")
+	- Skip ID generation. But will add when persist is called.
+	  @GeneratedValue(strategy=GenerationType.IDENTITY)
+	- Using table
+	  @TableGenerator(name, pkcolumnName, valueColumnName, initialValue, allocationSize)
+	  @GeneratorValue(generator=tableName)
+	- Using table V2
+	  @GeneratedValue(strategy=GenerationType.TABLE)
+-----------------------------------------------
+JPA Relationship
+
+Concept
+	- Different kinds of relationships
+	- JPA mapping metadata
+	- Roles
+		- Own side (source entity)
+		- Other side (target entity)
+		- Global views
+Associations
+	- Single valued associations
+		- many-to-one
+		- one-to-one
+	- Collection-values associations
+		- one-to-many
+		- many-to-many
+
+- @ManyToOne
+	- current class instances can belong to the same field instances
+	- @JoinColumn(name)
+- @OneToOne
+	- current class instances belongs to a single field instances
+	- @JoinColumn(name)
+	- bidirectional: on the other class field @OneToOne(mappedBy=xxx) field.xxx
+	  where xxx is a field on the originator class with @OneToOne
+- @OneToMany
+	- @OneToMany(mappedBy=xxx) field.xxx is annotated with ManyToOne.
+	  The field is collection type.
+	- Unidirectional (Many element can stand without one, there is no FK in other table)
+		- @OneToMany without mappedBy value
+		- In database we will need a connectionTable
+		- @JoinTable(name, joinColumns=@JoinColumn(name), inverseJoinColumns=@JoinColumn(name))
+- @ManyToMany
+	- @ManyToMany
+	  @JoinTable(name, joinColumns=@JoinColumn(name), inverseJoinColumns=@JoinColumn(name))
+	- @ManyToMany(mappedBy)
+	- What if you want to store more then two IDs in a ManyToMany Table?
+		- It is no longer a join table
+		- But it is a functional entity, you will have to create a new entity
+
+- Lazy relationships
+	- Why we use it?
+		- Enhancing performance
+		- Reduce amount of SQL executed
+	- Default
+		- Single-valued: EAGER
+		- Collection-valued: LAZY
+	- @OneToOne(fetch=FetchType.LAZY)
+
+- Reusable field definition
+	- @Embeddable @Access(AccessType.FIELD)
+	  public class Address ... with usual fields with annotations
+	- In another entity
+	  @Embedded
+	- Or you can change the name of the fields as well
+	  @AttributeOverrides({@AttributeOverride(name, column=@Column(name))})
+-----------------------------------------------
+Persistence context
+	- Persistence unit: named configuration of entity classes
+	- Persistence context: managed set of entity instances
+	- Managed entity: contained within a persistence context
+	- Entities are not persisted automatically when they are created in JVM
+	- Entities are not deleted automatically when they are garbage collected
+	- Persistence context is the collection of all the managed objects of an EntityManager
+	- Database entity object is represented by no more than one in-memory entity object within the same EntityManager
+	- Persistence context is a local cache for the EntityManager
+	- When transaction is finished the objects are detached
+Entity Manager:
+	- Persistence context is always accessed indirectly through the entity manager
+	- Manage and search for entities in the relational database
+Entity Object Lifecycle:
+	- 0 - new - New
+	- New - persist - Managed
+	- Managed - remove - Removed
+	- Managed - commit, flush - Database
+	- Managed - clear - Detached
+	- Removed - persist - Managed
+	- Removed - close - Detached
+	- Removed - commit, flush - Database
+	- Database - retrieve, find, query, ... - Managed
+Entity Manager use
+	- em.persist
+	- em.find - loads everything which is EAGER. It will be stored in persistence context. When next time find is called, there will be no DB call.
+	- em.remove - what you want to remove must be managed. (But the relationships have to be taken care of as well!)
+	  If you do not take care of them, it will throw foreingKeyValidation.
+	  Unfortunately it will only throw this when flush happens, not when the remove is executed.
+	- cascading operations
+		- cascading behaviour on the relationships
+		- types
+			- PERSIST
+			- REFRESH
+			- REMOVE
+			- MERGE
+			- DETACH
+			- ALL
+		- Default: empty
+		- @ManyToOne(cascade={Cascade.})
+	- Clearing the persistence context
+		- em.clear: Clears the persistence context, causing all managed entities to become detached.
+	- Synchronization with the database
+		- em.flush: Synchronize the persistence context to the underlying database.
+		- em.refresh: Refresh the state of the instance from the database
+	- other operations:
+		- contains
+		- createNativeQuery
+		- createNamedQuery
+		- createQuery
+		- getCriteriaBuilder
+		- getLockMode
+Detachment
+	- Detached entity: no longer associated with the persistence context, no "tracking" of entity
+	- Entity is detached when:
+		- em.clear
+		- em.detach
+		- entity is serialized (the serialized form)
+		- transaction rollback occurs
+		- transaction-scoped persistence context commits
+		- persistence context closed
+    - Detach of an entity with no-lazy attributes is not a big deal
+	- The behaviour of accessing an unloaded attribute when the entity is detached is not defined
+	- use isLoaded()
+    - Merge (detached) entity: merge the state of a detached entity into a persistence context
+		- em.merge
+-----------------------------------------------
+JPA Queries
+
+There are two methods
+	- Java Persistence Query Language (JPQL)
+	- Criteria API (JPA 2.1)
+Features
+	- Single and multiple result types
+	- Aggregate functions, sorting, grouping
+	- Support join (inner and outer)
+	- Conditional expressions
+	- Update, delete bulk queries
+	- Result projection into non-persistent classes
+
+JPQL
+	- Select field or entity
+		- select e from T
+	- Filtering
+		- where T.field
+		- supports T.field.field as well
+	- Aggregate queries
+		- count, max, avg, having, group by
+	- Joins
+		- implicit (from T, R)
+		- with the association (from T join R)
+	- Positional parameter binding
+		- into the query "?1"
+	- Named parameter binding
+		- ":value"
+	- em.createQuery().setParameter().getSingleResult()
+		- if not a single value is presented, exception will be thrown, rollback is executed.
+	- return types
+		- Basic Type
+		- Entity Type
+		- Array of Object
+		- Constructor Expression
+			- Select NEW (t.x, r.y) from T t JOIN R read
+		- em.createQuery().getSingleResult
+		- em.createQuery().getResultList
+	- Inner joins
+		- joins over the relationships between relations
+		- typically equates to a join over a foreign key relationship in the database
+	- Fetch joins
+		- fetching an association (persistent fields or properties of the articles that are eagerly fetched are fully initialized) as a side effect of the execution of a query
+		- will load all association as if they were eager
+		- LEFT JOIN FETCH
+	- Bulk update and delete
+		- persistence context is not updated to reflect to the results of the operations
+		- thus it is virtually executed on DB
+		- em.createQuery.executeUpdate
+	- Native queries
+		- em.createNativeQuery
+
+Criteria API
+	- Literal translaction of JPQL to programming interface
+	- Adopts programming best practices (e.g.: method chaining)
+	- Java programming language features
+	- CriteriaBuilder cb = em.getCriteriaBuilder(), CriteriaQuery c,Root,c.select.where(cb.equal))
 -----------------------------------------------
 Spring Data
 
+- Make it easy to implement JPA based repositories
 - Improved support for relational/non-relational database technologies
 - Makes it easy to use new data access technologies:
 	- non-sql databases
