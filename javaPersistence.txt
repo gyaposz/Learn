@@ -8,7 +8,24 @@ Object-relation mapping (ORM)
 	- map fields to columns
 	- relationships
 	- inheritance
-  
+
+Object/Relational Mismatch
+- OO concept
+	- encapsulation (underlying implementation not exposed)
+	- accessibility (private, public)
+	- interface, class, inheritance and polymorphism (interface only through views)
+- Data type differences
+	- reference driven approach in OO, it is forbidden in RM
+	- String limits, whitespaces
+- Structural and integrity differences
+	- composition of other objects in OO, unnested variables in RM
+	- constraints are visible in RM, exception protection in OO only
+- Manipulative differences
+	- small number of well-defined operators to manipulate data in RM
+	- custom built imperative operations in OO
+- Transactional differences
+	- transactions in DB are much larger piece of work than any operation in OO
+	- isolation or durability is hard to understand in OO, only atomicity and consistency
 -----------------------------------------------
 History 
 
@@ -289,11 +306,6 @@ Transactions again
 		- Never
 		- Nested (transaction within transaction)
 -----------------------------------------------
-Spring ORM
-
-- Annotations (@Repository)
-- Working with different persistent technologies
------------------------------------------------
 JPA
 
 Entity
@@ -323,6 +335,15 @@ JPA Elements
 - Queries (JPQL, criteria)
 - O-R metadata
 
+What does JPA need to work
+- JPA implementation: Hibernate JPA Support (hibernate-entitymanager)
+- Spring-ORM: (spring-orm)
+- Spring config (Datasource, entityManagerFactory, transactionManager, exceptionTranslation, @EnableTransactionManagement)
+- Configuration used to be in persistence.xml but it has changed to annotations nowadays.
+- Additional config
+	- hibernate.hbm2ddl.auto - create-drop/create/etc. DDL operations automatically created for us.
+	- hibernate.dialect - org.hibernate.dialect.MySQL5Dialect - the actual dialect
+	- hibernate.show_sql - true - it will show the results of each operation
 -----------------------------------------------
 JPA metadata
 
@@ -333,6 +354,9 @@ JPA metadata
 	- It is not stored in the database
 
 - Annotations
+	- Putting annotations on fields (or explicit @Access(AccessType.FIELD) on entity) will make JPA work as Field oriented approach
+	- Putting annotations on getters (or explicit @Access(AccessType.PROPERTY) on entity) will make JPA work as Property oriented approach
+	- JPA can work with mixed behaviour
 	- @Entity on class
 	- @Id on field, must be serializable
 	- @Table(name, schema) on class
@@ -340,7 +364,7 @@ JPA metadata
 		- fetch=FetchType.LAZY
 		- fetch=FetchType.EAGER
 	- Simple types are mapped automatically (java.util.Date, java.util.Calendar as well!)
-	- @Column (name) on field
+	- @Column(name, unique, nullable, insertable, updatable, table, columnDefinition, length, precision, scale) on field 
 	- @Lob on field
 	- @Enumeration(EnumType.STRING) on field
 	- @Temporal(TemporalType.DATE, TIME, TIMESTAMP) on field
@@ -359,6 +383,114 @@ JPA metadata
 	  @GeneratorValue(generator=tableName)
 	- Using table V2
 	  @GeneratedValue(strategy=GenerationType.TABLE)
+	- Composite keys
+	  - @EmbeddedId, where the field itself is reference to a class. That class is of course @Embeddable with @Column's of the composite key
+	  - @IdClass(T.class), where T is just a simple POJO with the required key elements. You have to list these in your Entity as well, all of them with @Id annotations.
+	  - We can even add @JoinColumn and @Id at the same time.
+
+- Secondary table
+	- @Table
+	- @SecondaryTable(name, pkJoinColumns=@PrimaryKeyJoinColumn)
+	- @Column(table)
+	 
+- Validations
+	- JSR-303
+		- @NotNull
+		- @Null
+		- @AssertTrue
+		- @AssertFalse
+		- @Min(value)
+		- @Max(value)
+		- @DecimalMin(value) - supports String
+		- @DecimalMax(value) - supports String
+		- @Size(min,max)
+		- @Digits(integer,fraction) - supports String
+		- @Past
+		- @Future
+		- @Pattern(regexp, flags, message)
+		
+- Annotations vs XML
+	- Annotation pros
+		- Easy to learn
+		- Very simple to use
+	- Annotation cons
+		- Annotations make the POJOs JPA-dependent
+		- XML configuration can be externally stored and modified without code modification (testing?)
+		- Cannot use the same entity classes against two different databases with different schemas
+-----------------------------------------------
+JPA inheritance
+
+- JPA supports inheritance in the object model
+- It has to used gingerly
+- Large hierarchies can lead to performance reduction
+- @Entity on parent class
+- By default child class does not use the fields of parent class except two cases
+	- Child class with @Entity annotation and using extends keyword with parent
+	- In case of abstract class we cannot use @Entity, we use @MappedSuperclass
+- There are three possible storage possibility
+	- Singe-Table strategy
+		- Everything goes into a single table
+		- One field will nominate the type, this is called discriminator column
+		- @Inheritance(strategy=InheritanceType.SINGLE_TABLE) on parent class
+		- @DiscriminatorColumn(name) on parent class. Its value can be:
+			- @DiscriminatorValue(value) on child class
+			- If not set, it will be class name
+			- Or @Entity(name) on child class
+		- What if a column must not be null? DB cannot represent it
+	- Joined strategy
+		- Every specialized field goes to its own table, similar content goes to parent table.
+		- Only entities receive table, MappedSuperclass does not have one
+		- @Inheritance(strategy=InheritanceType.JOINED) on parent class
+		- @DiscriminatorColumn(name, discriminatorType=DiscriminatorType.INTEGER) on parent class
+		- @Table(name) on child classes
+		- @DiscriminatorValue(value) on child classes (if Integer is set, then it should "1", "2", etc.)
+		- Using several tables does not imply huge performance impacts as joins are based on FK and indexes are built on them
+			- (What is more, Dr. Edgar Codd himself did not say that every table should be stored in separate physical drive, thus they can even go to the same block on hard-drive in theory).
+	- Table-per-Concrete-Class Strategy
+		- Every entity goes to its own separate table
+		- @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+		- select * from X union select * from Y
+	- Mixed inheritance
+		- On one layer we can use JOINED inheritance for example on another level we can use SINGLE_TABLE inheritance.
+-----------------------------------------------
+Locking
+	- Why locking is important?
+		- Updates should not overwrite each others sets if a previous change has already modified it.
+		- (Like Java concurrency in RDBMS)
+	- Types of locking in JPA
+		- Implicit locks (provided by DB Vendor) comes hand-in-hang with isolation level:
+			- E.g.: READ_COMMITTED comes with query-level shared locks for reading, but REPEATABLE_READ and SERIALIZABLE comes with transaction-level shared locks for reading
+		- Explicit locks can be optimistic and pessimitic
+		- Optimistic locking
+			- Most common style
+			- Assumes that data will not be modified between when you read the data until you write the data
+			- Verifies that the object has not changed by another user in between the read and the write
+			- If record changed, OptimisticLockException is thrown during flush()
+			- This is done through an extra column in the table which is usually called version
+			- In case of every modification the update goes like set version=X+1 where version=X
+			- optimistic: Always issues a version check upon transaction commit in case of modifications
+			- optimistic_force_increment: Always increase the entity version (even when the entity doesn't change) and issues a version check upon transaction commit within a single update
+			- In JPA @Version annotation can be used.
+			- Policies
+				- Version @Version
+				- Time stamp @Version @Temporal
+			- Recovery from OptimisticLockException - please restart purchase method.
+			- Can be used explicitly via EntityManager lock method
+		- Pessimistic locking
+			- Pessimistic_read represents shared lock
+			- Pessimistic_write represents exclusive lock
+			- Pessimistic force increment exclusive lock and entity version is incremented even it was unchanged.
+			- lock can be called through entityManager
+			- TransactionRequiredException when no transaction is active
+			- LockTimeoutException when
+				- Pessimistic read lock fails if another user (another em instance) holds pessimitic write lock
+				- Pessimistic write lock fails if another user (another em instance) holds either a pessimitic write or pessimitic read lock
+				- javax.persistence.lock.timeout can wait for a lock to be released
+			- locks are released when transaction ends
+			- Disadvantages
+				- Reduced concurrency
+				- Deadlock in database
+				
 -----------------------------------------------
 JPA Relationship
 
@@ -417,6 +549,8 @@ Associations
 	- Or you can change the name of the fields as well
 	  @AttributeOverrides({@AttributeOverride(name, column=@Column(name))})
 -----------------------------------------------
+JPA API
+
 Persistence context
 	- Persistence unit: named configuration of entity classes
 	- Persistence context: managed set of entity instances
@@ -435,8 +569,8 @@ Entity Object Lifecycle:
 	- New - persist - Managed
 	- Managed - remove - Removed
 	- Managed - commit, flush - Database
-	- Managed - clear - Detached
 	- Removed - persist - Managed
+	- Managed - clear - Detached
 	- Removed - close - Detached
 	- Removed - commit, flush - Database
 	- Database - retrieve, find, query, ... - Managed
@@ -457,6 +591,7 @@ Entity Manager use
 			- ALL
 		- Default: empty
 		- @ManyToOne(cascade={Cascade.})
+		- @ManyToOne(orphanremoval=true) - this is an alternative to cascading
 	- Clearing the persistence context
 		- em.clear: Clears the persistence context, causing all managed entities to become detached.
 	- Synchronization with the database
@@ -469,6 +604,7 @@ Entity Manager use
 		- createQuery
 		- getCriteriaBuilder
 		- getLockMode
+		- getDelegate (native JPA provider for EntityManager. Using it will not be vendor independent.)
 Detachment
 	- Detached entity: no longer associated with the persistence context, no "tracking" of entity
 	- Entity is detached when:
@@ -483,6 +619,33 @@ Detachment
 	- use isLoaded()
     - Merge (detached) entity: merge the state of a detached entity into a persistence context
 		- em.merge
+Caching
+	- L1 cache is "transactional cache" which is separate for all EntityManagers
+	- L2 cache (if implemented) is "shared cache"
+		- It can be used by EntityManagers and gets updated after a transaction.
+		- It can also be disabled.
+		- It is cached is normalized form.
+		- @Cacheable annotation on @Entity
+		- query on updated objects may return stale data
+		- Concurrency for write (optimistic lock exception, or pessimistic lock)
+			- while one transaction finds a cached object another may already update it.
+			- it is important to use locking with second level cache.
+Entity Object Lifecycle:
+	- Events
+		- @PrePersist
+		- @PostPersist
+		- @PostLoad
+		- @PreUpdate
+		- @PostUpdate
+		- @PreRemove
+		- @PostRemove
+	- Listeners
+		- All the above events can go to a separate class outside of entity
+		- On entity one may want to either exclude parent listeners or add new ones:
+			- @ExcludeSuperclassListeners
+			- @EntityListeners({X.class, Y.class})
+		- There are also possibility to provide default listeners
+		- Those can be ignored with @ExcludeDefaultListeners
 -----------------------------------------------
 JPA Queries
 
@@ -534,13 +697,27 @@ JPQL
 		- thus it is virtually executed on DB
 		- em.createQuery.executeUpdate
 	- Native queries
-		- em.createNativeQuery
-
+		- em.createNativeQuery - JPQL String
+		- @NamedNativeQuery - em.createNativeQuery("queryName")
+		- @SqlResultSetMapping since v2.1
 Criteria API
 	- Literal translaction of JPQL to programming interface
 	- Adopts programming best practices (e.g.: method chaining)
 	- Java programming language features
 	- CriteriaBuilder cb = em.getCriteriaBuilder(), CriteriaQuery c,Root,c.select.where(cb.equal))
+-----------------------------------------------
+Spring ORM
+
+- Annotations (@Repository)
+- Working with different persistent technologies
+- Integration with Hibernate native, JPA, JDO, Other DAO implementations
+- Integration
+	- Configuration through DI
+	- Easier testing - IoC
+	- Common data access exceptions (@Repository)
+	- Integration transaction management (@Transactional)
+	- General resource management
+	- This is the recommended integration style to code DAOs against JPA, ...
 -----------------------------------------------
 Spring Data
 
@@ -724,3 +901,10 @@ Three principal layers:
 	- Service layer
 	- Domain model
 - Data Source layer
+
+Distributed data store
+- Several nodes support as the DB
+- CAP Theorem
+	- Consistency, Availability, Partition tolerance. It is impossible to simultaneously provide more than two guarantees.
+	- In other words in a network partition one has to choose between consistency and availability.
+	- In the absence of network failure both availability and consistency can be satisfied.
