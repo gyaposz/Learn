@@ -1,0 +1,130 @@
+Defensive programming
+- Ensure the continuing function of a piece of software under unforeseen circumstances
+- Goal is to improve software and source code
+	- General quality (bugs)
+	- Comprehensible code (easy to read and understand)
+	- Predictable behave despite unexpected inputs/actions
+- Techniques
+	- Reduce source code complexity
+	- Source code reviews
+	- Software testing
+	- Intelligent source code reuse
+	- Input validation
+	- Design by Contract
+-----------------------------------------------
+Design by contract
+- What is it?
+	- 1986 for Eiffel
+	- Design approach
+	- Interface specification
+	- Agreement between supplier and client
+- Formal, precise and verifiable interface specification
+- Extends ordinary definition of abstract data types
+	- Preconditions
+	- Postconditions
+	- Invariants
+
+- Precondition
+	- Specify conditions that must hold before a method can execute
+	- Evaluated just before a method exeuctes
+	- Involve the system state and the arguments passed into the method
+	- Specify obligations that a client of a software component must meet before it may invoke a particular method of the component
+	- If a precondition fails, a bug is in a software component's client
+- Postcondition
+	- Specify conditions that must hold after a method completes
+	- Executed after a method completes
+	- Involve the old system state, the new system state, the method arguments and the method's return value
+	- Specify guarantees that a software component makes to its clients
+	- If a postcondition is violated, the software component has a bug.
+- Invariants
+	- Specify conditions that must hold anytime a client could invoke an object's method
+	- Defined as part of a class definition
+	- Evaluated anytime before and after a method on any class instance executes
+	- Violation of an invariant may indicate a bug in either the client or the software component
+	
+- Inheritance
+	- A subclass should inherit the contracts made by its parent classes
+	- Preconditions can only get weaker
+	- Postconditions can only get stronger
+
+- DBC vs Bean validation
+	- Bean validation
+		- Validation frameworks can be used to validate data against business logic
+		- JSR-303
+		- JSR-349
+	- Bean validation frameworks
+		- Lets you express constraints on object models via annotations
+		- Lets you write custom constraints in an extensible way
+		- Provides the APIs to validate objects and object graphs
+		- Provides the APIs to validate parameters and return values of method and constructors
+	- For checking Bean state
+	- Design by Contract is NOT bean validation
+	- DBC APIs can be used to validate the data against the "contract" between the supplier (service) and the client
+	- These things are different aspects of the application.
+-----------------------------------------------
+DBC libraries for Java
+	- OVal
+	- SpringContracts
+	- Contracts for java (CoFoJa)
+	- JML
+	- C4J
+	- Modern Jass
+-----------------------------------------------
+OVal Framework
+- Supports for several aspects of programming by contract - however it is not full blown programming by contract implementation.
+- Using annotation on validated parameters
+- More than DBC, a whole validation framework
+- Specify constraints for a class fields, method return values, constructors and method parameters
+- Implementation
+	- Weaving source code to OVal via AspectJ compiler
+	- Spring AOP also supported
+
+- DBC features
+	- constraints for constructor (precondition)
+	- constraints for method parameters (precondition)
+	- requiring a certain object state before a method is called (precondition)
+	- object validation after an object has been created (invariant)
+	- enforcing object validation before/after a method of an object is/has been called (invariant)
+	- constraints for a method's return value that are automatically checked after a method has been executed (postcondition)
+	- requiring a certain object state after a method is called (postcondition)
+	
+- Annotation
+	- Precondition:
+		- @Guarded - to put on business object classes. When creating beans, it will check what conditions are available
+		- @Guarded(inspectInterfaces=true) - Even the condtitions created on interfaces would be executed
+		- @NotNull - on constructor or methods arguments
+		- @NotEmpty - on method arguments or datamember
+		- @Length(max=10)
+		- @AssertFieldConstraints - field and setter. Field has several annotations. Argument of setter can have a copy of them.
+		- @AssertFieldConstraints("name") - Same as above just even with different name
+		- @Guarded(applyFieldConstraintsToSetter=true) - implicit constraint copying.
+		- @Pre(expr=, lang="groovy/beanshell/jexl/js/ruby")
+	- Postcondition:
+		- @NotNull - on method return value
+		- @Length(max=4)
+		- @IsInvariant
+		- @Post(expr=, lang=)
+	- Invariants
+		- @PreValidateThis (checkes all validation before execution)
+		- @PostValidateThis (checkes all validation after execution) even for constructor
+		
+-----------------------------------------------
+DBC with Spring AOP
+
+- What is AOP?
+	- Increase modularity by allowing the separation of cross-cutting concerns
+	- Examples:
+		- Logging
+		- Declarative transaction management
+		- DBC implementation
+	- Spring AOP vs AspectJ
+		- Spring AOP körbeproxy-zza
+		- Runtime weaving
+		- Compile time, kódba fordul - AspectJ
+	- How to test it?
+		- Spring container startup (more like an integration test)
+		- Manually weaving somehow:
+			AspectJProxyFactory factory = new AspectJProxyFactory(target);
+			factory.setProxyTargetClass(true);
+			factory.addAspect(new MyGuard());
+			return factory.getProxy();
