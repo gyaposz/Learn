@@ -1,0 +1,158 @@
+1. What is Software Architecture?
+
+Software Architecture
+	Software application architecture is the process of defining a structured solution that
+	meets all of the technical and operational requirements, while optimizing common
+	quality attributes such as performance, security, and manageability
+	It involves a series of decisions based on a wide range of factors, and each of these decisions can
+	have considerable impact on the quality, performance, maintainability, and overall
+	success of the application.
+Why Is Architecture Important?
+	Like any other complex structure, software must be built on a solid foundation.
+	Failing to consider key scenarios, failing to design for common problems, or failing
+	to appreciate the long term consequences of key decisions can put your application
+	at risk.
+	Systems should be designed with consideration for the user, the system (the IT
+	infrastructure), and the business goals.
+Architecture and design
+	Architecture focuses on how the major elements and components within an application
+	are used by, or interact with, other major elements and components within the
+	application. The selection of data structures and algorithms or the implementation
+	details of individual components are design concerns. Architecture and design concerns
+	very often overlap.
+Goals of Architecture
+	Application architecture seeks to build a bridge between business requirements
+	and technical requirements by understanding use cases, and then finding ways to
+	implement those use cases in the software. The goal of architecture is to identify the
+	requirements that affect the structure of the application. Good architecture reduces
+	the business risks associated with building a technical solution.
+	- User empowerment (personalization without settings overload)
+	- Market maternity (existing technology and platform)
+	- Flexible design (louse coupling, reusability, maintainability. plugins, SOA)
+	- Future trends (media, mobile devies, cloud, bandwith growth, etc.)
+Key Principles
+	Some design decision must be made early, but try to postpone as much as possible
+	Do not over engineer the architecture, do not make assumptions you cannot verify.
+	- Build to change instead of build to last
+	- Model to analyze to reduce risk
+	- Use models as communication tools
+	- Identify key engineering decisions
+	Iterative approach of architecture, revisit what requirements have been met with the
+	current iteration, why is it an improvement, what assumptions did I have in this iteration.
+	What are the risk with it and how is it possible to mitigate them.
+	
+2. Key Principles of Software Architecture
+
+Key Design Principles
+	- SoC Separation of Concerns (High cohesion, low coupling) E.g.: UI, business processing, data access
+	- Single Responsibility Principle
+	- Law of Demeter (A component should not now about internal details of other components)
+	- DRY
+	- Minimize upfront cost: You ain't gonna need it, big design upfront (YAGNI / BDUF)
+Design practices
+	- Keep design patterns consistent within each layer
+	- Do not duplicate functionality
+	- Prefer cohesion to inheritance
+	- Codestyle and naming convention
+	- Automated QA
+	- metrics and operational data needed by application
+Application Layers
+	- Separate areas of concerns
+	- Explicit about layer communication (data flow, dependencies)
+	- Use abstraction to implement loose coupling between layers (Dependency inversion, interface, facade)
+	- Not mixture of different types on components in the same layer
+	- Keep data format consistent within a layer
+Components, Modules and Functions
+	- A component should not rely on implementation details of another component
+	- Do not overload the functionality of a component
+	- Understand component communication
+	- Keep crosscutting concerns separated from application business logic
+	- Clean contract for components
+Key Design Considerations
+	- Application Type
+	- Deployment Strategy
+	- Appropriate Technology
+	- Quality Attributes (security, usability, performance, etc.) some are always needed (security,
+	performance) some may not (interoperability, scalability)
+		- What are the key quality attributes? Identify them
+		- What are the key requirements for addressing quality attributes? Are they quantifible?
+		- What are the acceptance criteria for them?
+	- Crosscutting concerns
+	
+3. Architectural Patterns and styles
+
+	Architectural Pattern or Style is coarse grained pattern providing abstract framework for a family of
+	systems.
+	An architectural style improves partitioning and promotes design reuse by providing solutions to
+	frequently recurring problems
+	Benefits:
+		- common language
+		- technology agnostic conversations
+		- Can be organized around focus areas (communication, domain, deployment)
+		
+Client-Server:
+	Segregates the system into two applications, where the client makes requests to the server. In many
+	cases, the server is a database with application logic represented as stored procedures.
+	Variations:
+		- Client-queue-client
+		- Peer-to-peer
+		- Application servers
+Component-Based Architecture:
+	Decomposes application design into reusable functional or logical components that expose well-defined
+	communication interfaces.
+		- Depends on a mechanism within the platform that provides an environment in which they can execute.
+		(COM, DCOM, CORBA, EJB)
+		- Dependency Injection or Service Locator patterns can be used to manage dependencies
+Domain Driven Design:
+	An object-oriented architectural style focused on modeling a business domain and defining business
+	objects based on entities within the business domain.
+		- Ubiquotus language: Using common language that focuses on business domain
+		- Domain model is a direct projection of this shared language
+		- May come with great cost due to lot of isolation and encapsulation
+Layered Architecture:
+	Partitions the concerns of the application into stacked groups (layers).
+	Layered architecture focuses on the grouping of related functionality within an	application into
+	distinct layers that are stacked vertically on top of each other.
+		- Common role or responsibility on each layer
+		- Communication is explicit and loosely coupled
+		- Abstraction, High cohesion, Encapsulation, Clearly defined functional layers, Reusable, Loose coupling
+Message Bus:
+	An architecture style that prescribes use of a software system that can receive and send messages using
+	one or more communication channels, so hat applications can interact without needing to know specific
+	details about each other
+	It is a style for designing applications where interaction between applications is accomplished by
+	passing messages (usually asynchronously) over a common bus. The most common implementations of message
+	bus architecture use either a messaging router or a Publish/Subscribe pattern, and are often implemented
+	using a messaging system such as Message Queuing
+	- Message-oriented communication, Complex processing logic, modification to processing logic, 
+	Integration with different environments
+	- Enterprise Service Bus, Internet Service Bus
+N-Tier / 3-Tier
+	Segregates functionality into separate segments in much the same way as the layered style, but with
+	each segment being a tier located on a physically separate computer.
+	Each tier is completely independent from all other tiers, except for those immediately above and below
+	it. The nth tier only has to know how to handle a request from the n+1th tier, how to forward that
+	request on to the n-1th tier (if there is one), and how to handle the results of the request.
+	Communication between tiers is typically asynchronous in order to support better scalability.
+Object-Oriented
+	A design paradigm based on division of responsibilities for an application or system into individual
+	reusable and self-sufficient objects, each containing the data and the behavior relevant to the object.
+	An objectoriented design views a system as a series of cooperating objects, instead of a set of routines
+	or procedural instructions. Objects are discrete, independent, and loosely coupled; they communicate
+	through interfaces, by calling methods or accessing properties in other objects, and by sending and
+	receiving messages.
+	- Abstraction, Composition, Inheritance, Encapsulation, Polymorphism, Decoupling
+Service-Oriented Architecture (SOA)
+	Refers to applications that expose and consume functionality as a service using contracts and messages.
+	Services are loosely coupled because they use standards-based interfaces that can be invoked, published,
+	and discovered. Services in SOA are focused on providing a schema and message-based interaction with an
+	application through interfaces that are application scoped, and not component or object-based.
+	- Services are autonomous
+	- Services are distributable
+	- Services are loosely coupled
+	- Services can share schema or contract but not class
+	- Compatibility is based on policy (transport, protocol, security)
+	
+4. A technique for architecture and design
+
+5. Layered Application Guidelines
