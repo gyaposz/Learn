@@ -335,4 +335,52 @@ Csakhogy itt a ModelAttribute metódusának paramétere nem form-object lesz, ha
 Ez azért fontos, hogy a submit gomb lenyomása után megőrződjön a submitált kontent és továbbra is kint legyen a form-ban. A model-ben tehát benne marad a kontent a korábbi requestmapping-hez képest.
 Most két modelünk van tehát. Az egyik befelé fogad adatot (szépészetileg fontos lehet, hogy az előző keresés értékét megőrizzük) a másik model kifele tol.
 
-Spring MVC 6/12 0:00
+Van azonban Spring form support. Spring MVC comes with tag library for handling forms. Two way data-binding. See it later...
+
+-----------------------------------------------
+20. Data-binding - BindingResult
+
+Lehetnek hibák a binding során. Pl.: alphabetikus karakterek és number-re kellene konvertálni.
+
+A binding eredményét a BindingResult-ba teszi. Ezt odaadhatjuk a handler metódusnak vagy modelattribute metódusnak. Pl.:
+
+@RequestMapping(value="/", method=RequestMethod.POST)
+public String processSubmit(@ModelAttribute("pet") Pet pet, BindingResult result) {
+  if (result.hasErrors()) {
+    return "petForm";
+  }
+  // ...
+}
+
+BindingResult.reject() - kézzel előídézhető hiba (pl futás időbeli kezelés, pl ilyen ID már van.)
+
+-----------------------------------------------
+21. Data-binding - naming
+
+A form-object lehet nagyon komplex is. Ezért field-ekre való hivatkozást megtehetjük a JSP-ben például úgy, hogy <input name="formObject.subObject.x">
+
+lehet adattag, adattag.aladattag, adattag[index] (listhez), adattag[key] (mapheZ)
+
+-----------------------------------------------
+22. Data-binding - Type conversion
+
+PropertyEditors - van egy rakat előre definiált, de sajátot is lehet definiálni.
+
+-----------------------------------------------
+23. Data-binding - form:form
+
+Two-way data-binding
+
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<form:form modelAttribute="addBookRequest" action="addBook.html">
+
+  <form:input path="title" placeholder="Title">
+
+addBookRequest.title - two-way data-binding meg is van. Nem kell kézzel huzalozgatni.
+
+  <form:select items="${bookModel.genreList}" itemLabel="label" itemValue="value"
+
+ekkor a genreList elemeinek getLabel és getValue metódusait hívjuk fel, hogy a select-et feltöltsük.
+
+Spring MVC 6/12 48:00
