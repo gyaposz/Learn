@@ -1,0 +1,202 @@
+Cloud computing:
+	What is cloud computing
+	Share Responsibility Model:
+		IAAS - Infrastructure as a Service - most amount of responsibilities, most configurable
+		PAAS - Platform as a Service
+		SAAS - Software as a Service - least amount of responsibilities, least configurable
+	Cloud Models:
+		Private cloud: used by one entity
+		Public cloud: used by many entities
+		Hybrid cloud: both private and public
+		Multi cloud: multiple public cloud providers
+	Azure Arc: Helping managing cloud model
+	Azure VMware solutions: VMware workloads in public cloud
+	Consumption based model
+	Pricing model
+Cloud Benefits:
+	High Availability
+	Scalability:
+		Vertical scaling
+		Horizontal scaling
+	Reliability
+	Predicability:
+		Cost
+		Performance
+	Security and governance
+	Management
+Azure Account:
+	Management Groups:
+		May contain management groups or subscriptions
+		Can enforce hierarchy policies or user access to multiple accounts
+	Subscriptions:
+		Multiple subscriptions based on billing, org structure, environment
+		Contains Resource Groups
+		Access control boundary
+		Billing boundary
+	Resource Groups:
+		Contains Resources
+		Each resource member of a single resource group
+		RGs cannot be nested
+	CLI: az version, az interactive
+	Azure Portal
+	DataCenters -> Availability Zones -> Regions -> Region Pairs
+	Sovereign Regions
+Azure Virtual Machines:
+	Scaling:
+		VM Scale Sets: identical VMs for the same task, automatic scale in and out with LB.
+		VM availability sets:
+			Update domain: VMs grouped to run updates after each other with 30 minutes pause.
+			Fault domain: by default VMs are group to up to 3 fault domains with different power source/networking.
+	VM Configuration:
+		Size, Storage Disks, Networking
+	CLI: az vm create, az vm extension set
+	Azure Virtual Desktop
+	Azure Active Directory
+	Multi-session windows
+	Azure Containers: ECS
+	Azure Functions: Lambda
+	Other hosting options: Azure App Service:
+		Mobile apps, Web apps, API apps, WebJobs
+	Networking:
+		public/private IPs
+		subnets
+		service endpoints
+		load balancers
+		Route tables: UDR, user defined routing
+		Border Gateway Protocol
+		Network security group: SGs
+		Network security appliance: firewall, etc.
+		Peering between virtual networks
+		VPN Gateways:
+			Point-to-site VPN
+			Site-to-site VPN
+			network-to-network connection
+			Azure ExpressRoute failover option: DirectConnect
+			Active/Standy or Active/Active
+		Azure DNS: Route53
+Azure Storage:
+	Storage Account: Unique namespace for storage
+	Storage Types:
+		Blob Storage: S3
+			Hot access, cool access, archive access
+		Data Lake Storage Gen2
+		Azure Files: NFS
+		Queue Storage: SQS
+		Table Storage
+	Storage Options:
+		Locally redundant storage (LRS): 3 times redundant in a single datacenter on primary region
+		Geo-redundant storage (GRS): 3 times redundant in both primary and secondary regions
+		Read-access geo-redundant storage (RA-GRS): Can you read from secondary?
+		Zone-redundant storage (ZRS): 3 times redundant across 3 AZs in primary region
+		Geo-zone-redundant storage (GZRS): 3 times redundant across 3 AZs in primary and 3 times redundant in secondary region
+		Read-access geo-zone-redundant storage (RA-GZRS): Can you read from secondary?
+	Migration:
+		Azure Migrate: Migration from on-premise to Azure:
+			Azure Migrate: Discovery and assessment
+			Azure Migrate: Server Migration
+			Data Migration Assistant
+			Azure Database Migration Service
+			Web app migration assistant
+		Azure Data Box
+			80TB
+	Tools:
+		AzCopy: CLI for moving files and blobs from to Azure storage account
+		Azure Storage Explorer: GUI on top of AzCopy
+		Azure File Sync: centralized file share for Windows
+Azure identity, access and security:
+	Azure AD
+		Similar to Active Directory, but in the cloud
+		Identity and access management service
+		Tasks:
+			Authentication with self-service, MFA, banned pwds and smart lockout, passwordless
+			SSO
+			Application Management: application proxy, My Apps portal, SaaS apps
+			Device Management: device registration
+		Azure AD Connect: to connect on-premise AD to Azure AD.
+		Azure AD Domain Services: Kerberos authentication, LDAP, group policy, domain join
+			For legacy application without possibility of modern authentication
+		Azure AD syncs to Azure AD DS, but not vice versa.
+		So on-premise AD -> Azure AD -> Azure AD DS.
+		Passwordless: Ms Authenticator: something you have, something you are, something you know.
+	External Identities:
+		Person, device, service outside of organization
+		Identity brought from goverment-issued digital identity or unmanaged social identity
+		Azure AD External Identities
+		B2B collaboration: External Identities may use resources in your account, shown as guest users in directory
+		B2B direct connect: between to Azure ADs. Supported only by Teams shared channels currently.
+		Azure AD business to customer: Apps to customers
+	Azure Conditional Access:
+		Based on sign-in information collected by conditional access, user may not be challenged with MFA if signed in from a known location. Who the user is, where the user is, what device the user use.
+		Or the access to an application may be blocked partially or entirely.
+	Azure Role Based Access Control: RBAC
+		Least Privilege Principle
+		Instead individual level, use RBAC group for common resource accessibility
+		Access may not be directly to resources, but to scopes.
+		Scope can be resources, RGs, subscriptions or management groups.
+	Zero Trust Model:
+		Verify explicitly: always authenticate and authorize
+		Use least privilege access
+		Assume breach: minimize blast radius and segment access, E2E encryption, analytics, threat detection, improve defenses
+	Defense-in-depth:
+		Physical
+		Identity and access
+		Perimeter (DDoS, firewall)
+		Network (deny by default, limit communication, secure connectivity, limit inbound/outbound)
+		Compute (Patched systems, secure access to VMs)
+		Application (secure storage of secrets, free of vulnerabilities)
+		Data (secure data)
+	Microsoft Defender for Cloud:
+		Monitoring tool for cloud, on-premise, hybrid or multi-cloud
+		Azure Arc helps extend Defender for Cloud on non-Azure machines.
+		Defender for Cloud deploys Log Analytics to collect information
+		Many Azure services use defender without deploying anything.
+		What it does is:
+			Assess:
+				regular detail vulnerabilities scans
+			Secure:
+				Azure security benchmark: Provides list of recommendations
+			Alerts
+Cost in Azure:
+	Calculate:
+		TCO Calculator - total cost of ownership, compare on-premise with cloud
+		Pricing Calculator - which resource fits my budget, estimate costs
+		Azure Advisor - unused resources, optimisation, accidental cost overruns
+		Cost Management Tool - bills, costs, etc.
+			- Budget Alerts - reaching defined amount of the condition
+			- Credit Alerts - credit monetary commitments are consumed.
+			- Department spending Quota Alerts 
+Governance:
+	Azure Blueprints: Cloudformation but for packaging and sharing policies, artifacts etc. ARM is for resource groups
+	Azure Policies: AWS Config
+		Make sure that everybody obeys the rules
+		Azure Policy Initiatives: grouping related policies together
+	Resource Locks: Resources cannot be deleted even with available rights
+		Delete: still can read or modify, but cannot delete resources
+		ReadOnly: can read, but cannot delete or modify resources
+	Service Trust Portal:
+		Microsoft's implementation of controls and processes to protect cloud and data
+		GDPR, PCI, etc.
+Features and tools:
+	Communcation with Azure:
+		Azure Portal
+		Azure Cloud Shell
+		Azure Powershell - for powershell
+		Azure CLI - for bash
+	Azure Arc: For hybrid and multi-cloud solutions
+		non-Azure resources projected in Azure Resource Manager (ARM)
+		Manage Kubernetes clusters as if in Azure
+		familiar Azure services
+		Used for:
+			Servers, Kubernetes clusters, Azure data services, SQL Server and VM
+	ARM and Azure ARM template:
+		Azure Blueprints applies policies in an automated fashion and ARM Templates allow you to deploy your resource as code. Using the two together helps ensure that you’re deploying consistent, compliant resources.
+	Azure Advisor:
+		help improve reliability, security, and performance, achieve operational excellence, and reduce costs
+	Azure Service Health:
+		Azure Health
+		Service Health
+		Resource Health
+	Azure Monitor:
+		Cloudwatch
+		Application Insight: Cloudwatch Insights
+		
